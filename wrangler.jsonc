@@ -1,0 +1,8 @@
+{
+  // 우리 반 일일 약사 — static site served by a Cloudflare Worker
+  "name": "pharmacy",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./public" },
+  "workers_dev": true,
+  "observability": { "enabled": false }
+}
