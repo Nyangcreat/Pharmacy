@@ -166,6 +166,14 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch .stars{position:absolute;top:10px;right:10px;display:flex;gap:1px;z-index:2}
 .pouch .stars svg{width:20px;height:20px}
 .pouch .ln.pt{word-break:keep-all;line-height:1.5}
+.pouch .tips{border-bottom:2px solid var(--green);padding:2px 0 8px;text-align:left}
+.pouch .tips-h{display:block;font-size:.95em;margin-bottom:4px}
+.pouch .tips ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.92em;line-height:1.7;word-break:keep-all}
+.pouch .tb{font:inherit;font-weight:700;display:inline-block;min-width:3.4em;min-height:30px;padding:0 8px;margin:0 2px;background:#fff;color:#3F3A36;border:2px dashed var(--green);border-radius:8px;cursor:pointer;vertical-align:middle}
+.pouch .tb.open{border-color:var(--accent)}
+.pouch .tb.bad{border:2px solid var(--bad);background:var(--bad-bg);color:var(--bad)}
+.pouch .tb.fin{min-width:0;border:0;background:transparent;border-bottom:2px solid var(--green);border-radius:0;min-height:0;cursor:default;padding:0 4px}
+.pouch .tipl{margin:6px 0 2px;font-size:.95em}
 .pouch .ln{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--green);padding-bottom:2px}
 .pouch .ln b{flex:1;font-weight:700;overflow-wrap:anywhere}
 .pouch .ln.r{justify-content:flex-end;border:0}
@@ -405,6 +413,26 @@ const CUT={tylenol:[4,7,9,11,12], digest:[3,5,8,11], cold:[3,7,11]};
 const rowFor=(m,age)=>{ if(m.pickRow){ const st=ALL_SITS.find(x=>x.right===m.id&&x.age===age)||{age}; return m.rows[m.pickRow(st)]; } return m.rows[(CUT[m.id]||[7,12]).filter(c=>age>=c).length]; };
 const timesOf=(m,age)=>{ if(m.times) return m.times; const x=rowFor(m,age)[1].match(/1일\s*(\d)(?:~(\d))?회/); return x?[+x[1],+(x[2]||x[1])]:[3,3]; };
 const timesTxt=t=>t[0]===t[1]?`${t[0]}`:`${t[0]}~${t[1]}`;
+const TIPS = [
+  {pre:'', post:'이(가) 처방받은 약만 먹어요.', ans:'나', opts:['나','가족','친구','아픈 사람 누구나']},
+  {pre:'약은 충분한 양의 미지근한', post:'와(과) 함께 드세요.', ans:'물', opts:['물','우유','주스','탄산음료']},
+  {pre:'약', post:'는 버리지 말고 약과 함께 보관하세요.', ans:'케이스와 설명서', opts:['케이스와 설명서','영수증','비닐봉투','약병 뚜껑']},
+  {pre:'유효기간이 지난 약은 약국이나 보건소의', post:'에 버려주세요.', ans:'폐의약품 수거함', opts:['폐의약품 수거함','일반 쓰레기통','싱크대 하수구','재활용 분리수거함']}
+];
+function tipsHTML(fk){
+  const done = fk!==undefined;
+  const rows = TIPS.map((t,i)=>{
+    let b;
+    if(done) b = `<span class="tb fin">${t.ans}</span>`;
+    else {
+      const v = S.tips[i], bad = S.tipBad.has(i);
+      b = `<button type="button" class="tb${v?' has':''}${bad?' bad':''}${S.open==='tip'+i?' open':''}" data-tip="${i}" aria-label="빈칸 고르기">${v?esc(v):'&nbsp;'}</button>`;
+    }
+    const list = (!done && S.phase==='fill' && S.open==='tip'+i) ? `<div class="p3 tipl" role="listbox">${S.tipOpts[i].map(o=>`<button type="button" class="p3b${S.tips[i]===o?' on':''}" role="option" data-tipv="${i}" data-val="${o}">${o}</button>`).join('')}</div>` : '';
+    return `<li>${t.pre?t.pre+' ':''}(${b})${t.post}${list}</li>`;
+  }).join('');
+  return `<div class="tips"><b class="tips-h">💊 약사의 당부</b><ul>${rows}</ul></div>`;
+}
 function timesBlank(fk){
   const sit=SITS[fk===undefined?S.i:fk], t=timesOf(med(sit.right),sit.age);
   if(fk!==undefined) return `<span class="blank">${timesTxt(t)}</span>`;
@@ -468,6 +496,7 @@ function pouchHTML(fk){
       <div class="ln to"><img class="face" src="face/${SITS[fk===undefined?S.i:fk].vid}.png" alt=""><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
       ${(st0=>`<div class="ln pt"><span>만 ${st0.age}세 / ${st0.sex}${st0.weight?` / ${st0.weight}kg`:''}</span></div><div class="ln pt"><span>증상 : ${st0.sum}</span></div>`)(SITS[fk===undefined?S.i:fk])}
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
+      ${tipsHTML(fk)}
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
       <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사<span class="wp">(&nbsp;<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.num)}번 ${esc(S.name)}</b>&nbsp;)</span></span></div>
@@ -604,7 +633,7 @@ function buildChips(medId, age){
 }
 function startSit(){
   S.ox = {}; S.badK = new Set(); S.timesBad = false; S.oxBad = new Set(); S.oxOrder = null; S.temp = null; S.tempBad = false;
-  S.score = 10; S.fixes = 0; S.lfSeen = false; S.lfOpen = false;
+  S.score = 10; S.fixes = 0; S.tips = {}; S.tipBad = new Set(); S.tipOpts = TIPS.map(t=>shuffle(t.opts.slice())); S.lfSeen = false; S.lfOpen = false;
   S.open = null; S.page = 1; S.times = null; S.tried = new Set(); S.viewId = null; S.firstTry = null; S.pickId = null; S.phase = 'pick'; S.slots = {}; S.filter = 'all'; S.tip = '';
   S.chips = buildChips(SITS[S.i].right, SITS[S.i].age);
   S.opts = {}; CATS.forEach(c=>{ const good=S.chips.filter(x=>x.cat===c.k&&x.ok); const bad=shuffle(S.chips.filter(x=>x.cat===c.k&&!x.ok)).slice(0,3); S.opts[c.k]=shuffle(good.concat(bad)); });
@@ -695,7 +724,7 @@ function paintWork(){
       <button type="button" class="${cls}" data-slot="${c.k}" ${chip && !checked ? `data-unplace="${c.k}" title="누르면 보기 예시로 돌아가요"`:''} ${checked?'disabled':''}>${body}</button>${ans}${c.k==='dose'?timesNote():''}</div>`;
   }).join('');
   w.innerHTML = `
-    <p class="guide"><span class="g-tag">활동방법</span>설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
+    <p class="guide"><span class="g-tag">활동방법</span>설명서와 배운 내용으로 아래 약봉투 빈칸을 채워 완성해보세요</p>
     <details class="fold${S.lfSeen?'':' nudge'}" id="fold" ${S.lfOpen?'open':''}>
       <summary><span>약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
       ${leaflet(med(S.pickId))}
@@ -717,7 +746,7 @@ function paintCheck(){
   const bar = document.getElementById('checkBar'); if(!bar) return;
   if(S.phase==='fill'){
     const n = filledCount();
-    bar.innerHTML = `<span class="count"></span><button class="btn" type="button" id="check" ${(n<CATS.length||S.times==null)?'disabled':''}>제공하기</button>`;
+    bar.innerHTML = `<span class="count"></span><button class="btn" type="button" id="check" ${(n<CATS.length||S.times==null||TIPS.some((t,i)=>!S.tips[i]))?'disabled':''}>제공하기</button>`;
   } else if(S.phase==='checked'){
     const r = S.res[S.i];
     bar.innerHTML = `<span class="count">복약지도서 ${r.fill} / ${CATS.length}칸 정답</span>`;
@@ -756,7 +785,8 @@ function deliver(){
   const m0 = med(sit.right); S.oxBad = new Set(m0.storeOX.map((r,i)=>i).filter(i=>S.ox[i]!==m0.storeOX[i][1])); S.tempBad = !!m0.storeTemp && S.temp!==m0.storeTemp;
   S.badK = new Set(CATS.filter(c=>c.k!=='store').filter(c=>{ const ch=chipById(S.slots[c.k]); return !(ch&&ch.ok); }).map(c=>c.k));
   S.timesBad = !(S.times!=null && S.times>=t[0] && S.times<=t[1]);
-  const ok = CATS.every(c=>{ if(c.k==='store') return S.oxBad.size===0 && !S.tempBad; const ch = chipById(S.slots[c.k]); return ch && ch.ok; }) && S.times!=null && S.times>=t[0] && S.times<=t[1];
+  S.tipBad = new Set(TIPS.map((x,i)=>i).filter(i=>S.tips[i]!==TIPS[i].ans));
+  const ok = CATS.every(c=>{ if(c.k==='store') return S.oxBad.size===0 && !S.tempBad; const ch = chipById(S.slots[c.k]); return ch && ch.ok; }) && S.times!=null && S.times>=t[0] && S.times<=t[1] && S.tipBad.size===0;
   if(!ok){ lose(); S.fixes++; }
   S.phase = 'result'; S.lastOk = ok; S.open = null;
   const v = VIDS[sit.vid];
@@ -917,6 +947,12 @@ $app.addEventListener('click', e=>{
     S.filter = b.dataset.filter; paintBank();
   } else if(b.dataset.fin){
     S.fin = +b.dataset.fin; paintFin();
+  } else if(b.dataset.tipv!==undefined){
+    if(S.phase!=='fill') return;
+    const k=+b.dataset.tipv; S.tips[k]=b.dataset.val; S.tipBad.delete(k); S.open=null; paintWork(); paintBank();
+  } else if(b.dataset.tip!==undefined){
+    if(S.phase!=='fill') return;
+    S.open = S.open==='tip'+b.dataset.tip ? null : 'tip'+b.dataset.tip; paintWork();
   } else if(b.dataset.times){
     if(S.phase!=='fill') return;
     S.times = +b.dataset.times; S.timesBad = false; S.open = null; paintWork();
