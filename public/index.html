@@ -540,7 +540,7 @@ function viewStart(){
   $app.innerHTML = `
   <section class="hero">
     <h1>도전! 일일약사 체험기</h1>
-    <div class="mission"><p>상황에 딱 맞는 약을 처방하고,<br>아픈 사람들이 약을 잘못 사용하지 않도록<br>정성껏 복약지도서가 담긴 약봉투를 완성해주세요</p><p class="star-rule">⭐ 별 5개로 시작해요. 약을 잘못 고르거나 약봉투가 틀리면 별이 반 개씩 줄어요.</p></div>
+    <div class="mission"><p>상황에 딱 맞는 약을 처방하고,<br>아픈 사람들이 약을 잘못 사용하지 않도록<br>정성껏 복약지도서가 담긴 약봉투를 완성해주세요</p></div>
     <div class="start-body">
     <form class="name" id="nameForm" novalidate>
       <div class="three">
@@ -641,7 +641,7 @@ function buildChips(medId, age){
 function startSit(){
   S.ox = {}; S.badK = new Set(); S.timesBad = false; S.oxBad = new Set(); S.oxOrder = null; S.temp = null; S.tempBad = false;
   S.score = 10; S.fixes = 0; S.tips = {}; S.tipBad = new Set(); S.tipOpts = TIPS.map(t=>shuffle(t.opts.slice())); S.lfSeen = false; S.lfOpen = false;
-  S.open = null; S.page = 1; S.times = null; S.tried = new Set(); S.viewId = null; S.firstTry = null; S.pickId = null; S.phase = 'pick'; S.slots = {}; S.filter = 'all'; S.tip = '';
+  S.open = null; S.page = 1; S.wp = 1; S.times = null; S.tried = new Set(); S.viewId = null; S.firstTry = null; S.pickId = null; S.phase = 'pick'; S.slots = {}; S.filter = 'all'; S.tip = '';
   S.chips = buildChips(SITS[S.i].right, SITS[S.i].age);
   S.opts = {}; CATS.forEach(c=>{ const good=S.chips.filter(x=>x.cat===c.k&&x.ok); const bad=shuffle(S.chips.filter(x=>x.cat===c.k&&!x.ok)).slice(0,3); S.opts[c.k]=shuffle(good.concat(bad)); });
   { const t0=timesOf(med(SITS[S.i].right),SITS[S.i].age); S.tOpts=[t0[0]].concat(shuffle([1,2,3,4,5].filter(n=>n<t0[0]||n>t0[1])).slice(0,3)).sort((a,b)=>a-b); }
@@ -696,7 +696,7 @@ function paintPick(){
   document.getElementById('scene').hidden = S.page===2;
   const ref = document.getElementById('ref');
   ref.hidden = true;
-  setTitle(S.page===2 ? 'Step2. 복약지도서 작성하기' : 'Step1. 알맞은 약 고르기');
+  setTitle(S.page===2 ? (S.wp===2 ? 'Step3. 약사의 당부' : 'Step2. 복약지도서 작성하기') : 'Step1. 알맞은 약 고르기');
 }
 
 function today(){ const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()+1, d:d.getDate()}; }
@@ -730,8 +730,15 @@ function paintWork(){
     return `<div class="fld"><span class="lab">${c.label}</span>
       <button type="button" class="${cls}" data-slot="${c.k}" ${chip && !checked ? `data-unplace="${c.k}" title="누르면 보기 예시로 돌아가요"`:''} ${checked?'disabled':''}>${body}</button>${ans}${c.k==='dose'?timesNote():''}</div>`;
   }).join('');
+  if(S.wp===2){
+    w.innerHTML = `
+    <p class="guide"><span class="g-tag">활동방법</span>배운 약 사용법을 떠올려 빈칸을 채워보세요</p>
+    ${tipsHTML(false)}
+    <div class="bar" id="checkBar"></div>`;
+    paintCheck(); return;
+  }
   w.innerHTML = `
-    <p class="guide"><span class="g-tag">활동방법</span>설명서와 배운 내용으로 아래 약봉투 빈칸을 채워 완성해보세요</p>
+    <p class="guide"><span class="g-tag">활동방법</span>설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
     <details class="fold${S.lfSeen?'':' nudge'}" id="fold" ${S.lfOpen?'open':''}>
       <summary><span>약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
       ${leaflet(med(S.pickId))}
@@ -740,7 +747,6 @@ function paintWork(){
       ${pouchHTML()}
       <div class="fields">${fields}</div>
     </div>
-    ${tipsHTML(false)}
     <p class="tip" id="tip" role="status">${S.tip||''}</p>
     <div class="bar" id="checkBar"></div>`;
   const fd = document.getElementById('fold');
@@ -754,7 +760,9 @@ function paintCheck(){
   const bar = document.getElementById('checkBar'); if(!bar) return;
   if(S.phase==='fill'){
     const n = filledCount();
-    bar.innerHTML = `<span class="count"></span><button class="btn" type="button" id="check" ${(n<CATS.length||S.times==null||TIPS.some((t,i)=>!S.tips[i]))?'disabled':''}>제공하기</button>`;
+    bar.innerHTML = S.wp===2
+      ? `<button class="btn ghost" type="button" id="wpBack">이전</button><button class="btn" type="button" id="check" ${TIPS.some((t,i)=>!S.tips[i])?'disabled':''}>제공하기</button>`
+      : `<span class="count"></span><button class="btn" type="button" id="wpNext" ${(n<CATS.length||S.times==null)?'disabled':''}>다음</button>`;
   } else if(S.phase==='checked'){
     const r = S.res[S.i];
     bar.innerHTML = `<span class="count">복약지도서 ${r.fill} / ${CATS.length}칸 정답</span>`;
@@ -973,10 +981,14 @@ $app.addEventListener('click', e=>{
     S.open = S.open==='times' ? null : 'times'; paintWork();
   } else if(b.id==='goFill'){
     S.page = 2; paintPick(); paintWork(); paintBank(); toTop();
+  } else if(b.id==='wpNext'){
+    S.wp = 2; S.open = null; paintPick(); paintWork(); toTop();
+  } else if(b.id==='wpBack'){
+    S.wp = 1; S.open = null; paintPick(); paintWork(); toTop();
   } else if(b.id==='check'){
     deliver();
   } else if(b.id==='refix'){
-    S.phase = 'fill'; paintPick(); paintWork(); toTop();
+    S.phase = 'fill'; S.wp = (S.badK.size||S.timesBad||S.oxBad.size||S.tempBad) ? 1 : 2; paintPick(); paintWork(); toTop();
   } else if(b.id==='seeDone'){
     viewResult();
   } else if(b.id==='next'){
