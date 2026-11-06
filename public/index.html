@@ -164,8 +164,7 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch .face{width:44px;height:44px;border-radius:50%;border:2px solid var(--green);background:#fff;flex:none;margin-right:2px}
 .pouch .stars{position:absolute;top:10px;right:10px;display:flex;gap:1px;z-index:2}
 .pouch .stars svg{width:20px;height:20px}
-.pouch .pt{display:grid;gap:2px;text-align:center;font-size:.92em;color:var(--ink);background:#FFFFFF;border:2px solid var(--bad);border-radius:8px;padding:6px 8px;margin-top:-4px}
-.pouch .pt span:first-child{font-weight:800}
+.pouch .ln.pt{word-break:keep-all;line-height:1.5}
 .pouch .ln{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--green);padding-bottom:2px}
 .pouch .ln b{flex:1;font-weight:700;overflow-wrap:anywhere}
 .pouch .ln.r{justify-content:flex-end;border:0}
@@ -256,7 +255,7 @@ details.ref .lf{margin-bottom:10px}
 .how-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
 .how-h b{flex:none;margin-bottom:0!important}
 .how-h span{font-weight:700;font-size:clamp(12px,3.6vw,15px);white-space:nowrap;letter-spacing:-.02em}
-details.fold{margin:0 0 14px;background:#F3F1EA;border:2px solid #CFC9BA;border-radius:10px;box-shadow:0 3px 0 #DDD7C8, 0 6px 0 #E8E3D6}
+details.fold{margin:0 0 14px;background:#F3F1EA;border:2px solid var(--bad);border-radius:10px;box-shadow:0 3px 0 #DDD7C8, 0 6px 0 #E8E3D6}
 details.fold summary{list-style:none;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center;padding:12px 96px;min-height:48px;font-weight:700;font-size:17px;color:#2B2926;text-align:center}
 details.fold summary em{position:absolute;right:12px;top:50%;transform:translateY(-50%)}
 details.fold summary::-webkit-details-marker{display:none}
@@ -461,7 +460,7 @@ function pouchHTML(fk){
     <h4><i>◇◇</i>내 복 약<i>◇◇</i></h4>
     <div class="inner">
       <div class="ln to"><img class="face" src="face/${SITS[fk===undefined?S.i:fk].vid}.png" alt=""><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
-      <div class="pt">${(st0=>`<span>만 ${st0.age}세 · ${st0.sex}${st0.weight?` · ${st0.weight}kg`:''}</span><span>증상: ${st0.sum}</span>`)(SITS[fk===undefined?S.i:fk])}</div>
+      ${(st0=>`<div class="ln pt"><span>만 ${st0.age}세 / ${st0.sex}${st0.weight?` / ${st0.weight}kg`:''}</span></div><div class="ln pt"><span>증상 : ${st0.sum}</span></div>`)(SITS[fk===undefined?S.i:fk])}
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
