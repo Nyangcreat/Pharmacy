@@ -272,6 +272,7 @@ details.fold .lf{border:0;border-radius:0 0 8px 8px;margin:0}
 .oxl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .oxl li{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 6px 6px 12px;font-size:14px;line-height:1.45}
 .oxl li>span:first-child{flex:1;min-width:0}
+.ddb.bad{border:2px solid var(--bad);background:var(--bad-bg);color:var(--bad)}
 .oxl li.bad{border-color:var(--bad);background:var(--bad-bg)}
 .oxb{display:flex;gap:4px;flex:none}
 .oxl li.tmp{flex-wrap:wrap;padding:8px 10px}
@@ -399,7 +400,7 @@ function timesBlank(fk){
   const sit=SITS[fk===undefined?S.i:fk], t=timesOf(med(sit.right),sit.age);
   if(fk!==undefined) return `<span class="blank">${timesTxt(t)}</span>`;
   const chk=S.phase==='checked', ok=S.times!=null&&S.times>=t[0]&&S.times<=t[1];
-  return `<button type="button" class="blank tm${chk?(ok?' ok':' bad'):''}" data-tm="1" ${chk?'disabled':''} aria-label="1일 복용 횟수 고르기">${S.times==null?'&nbsp;':S.times}</button>`;
+  return `<button type="button" class="blank tm${chk?(ok?' ok':' bad'):(S.timesBad?' bad':'')}" data-tm="1" ${chk?'disabled':''} aria-label="1일 복용 횟수 고르기">${S.times==null?'&nbsp;':S.times}</button>`;
 }
 function timesList(){
   if(S.phase!=='fill' || S.open!=='times') return '';
@@ -584,7 +585,7 @@ function buildChips(medId, age){
   return shuffle(chips);
 }
 function startSit(){
-  S.ox = {}; S.oxBad = new Set(); S.oxOrder = null; S.temp = null; S.tempBad = false;
+  S.ox = {}; S.badK = new Set(); S.timesBad = false; S.oxBad = new Set(); S.oxOrder = null; S.temp = null; S.tempBad = false;
   S.score = 10; S.fixes = 0;
   S.open = null; S.page = 1; S.times = null; S.tried = new Set(); S.viewId = null; S.firstTry = null; S.pickId = null; S.phase = 'pick'; S.slots = {}; S.filter = 'all'; S.tip = '';
   S.chips = buildChips(SITS[S.i].right, SITS[S.i].age);
@@ -671,7 +672,7 @@ function paintWork(){
       if(temp) rows.splice(1,0,temp);
       return `<div class="fld"><span class="lab">${c.label}</span><p class="ox-tip">${m.storeTemp?'설명서와 맞으면 O, 다르면 X를 누르고 보관 온도를 골라요.':'설명서와 맞으면 O, 다르면 X를 눌러요.'}</p><ul class="oxl">${rows.join('')}</ul></div>`;
     }
-    if(!checked){ const cur = S.slots[c.k] ? chipById(S.slots[c.k]) : null, open = S.open===c.k; return `<div class="fld"><span class="lab">${c.label}</span><button type="button" class="ddb${cur?' has':''}${open?' open':''}" data-dd="${c.k}" aria-expanded="${open}"><span${cur&&cur.text.length>20?' class="nw"':''}>${cur?cur.text:'눌러서 고르기'}</span><i aria-hidden="true">▾</i></button>${open?`<div class="p3" role="listbox">${(S.opts[c.k]||[]).map(o=>`<button type="button" class="p3b${o.text.length>20?' nw':''}${S.slots[c.k]===o.id?' on':''}" role="option" data-chip="${o.id}" aria-selected="${S.slots[c.k]===o.id}">${o.text}</button>`).join('')}</div>`:''}</div>`; }
+    if(!checked){ const cur = S.slots[c.k] ? chipById(S.slots[c.k]) : null, open = S.open===c.k; return `<div class="fld"><span class="lab">${c.label}</span><button type="button" class="ddb${cur?' has':''}${open?' open':''}${S.badK&&S.badK.has(c.k)?' bad':''}" data-dd="${c.k}" aria-expanded="${open}"><span${cur&&cur.text.length>20?' class="nw"':''}>${cur?cur.text:'눌러서 고르기'}</span><i aria-hidden="true">▾</i></button>${open?`<div class="p3" role="listbox">${(S.opts[c.k]||[]).map(o=>`<button type="button" class="p3b${o.text.length>20?' nw':''}${S.slots[c.k]===o.id?' on':''}" role="option" data-chip="${o.id}" aria-selected="${S.slots[c.k]===o.id}">${o.text}</button>`).join('')}</div>`:''}</div>`; }
     return `<div class="fld"><span class="lab">${c.label}</span>
       <button type="button" class="${cls}" data-slot="${c.k}" ${chip && !checked ? `data-unplace="${c.k}" title="누르면 보기 예시로 돌아가요"`:''} ${checked?'disabled':''}>${body}</button>${ans}${c.k==='dose'?timesNote():''}</div>`;
   }).join('');
@@ -731,12 +732,14 @@ function paintNav(){
 function place(chipId){
   if(S.phase!=='fill') return;
   const c = chipById(chipId); if(!c) return;
-  S.slots[c.cat] = c.id; S.open = null; S.tip = '';
+  S.slots[c.cat] = c.id; S.open = null; S.tip = ''; if(S.badK) S.badK.delete(c.cat);
   paintWork(); paintBank();
 }
 function deliver(){
   const sit = SITS[S.i], t = timesOf(med(sit.right), sit.age);
   const m0 = med(sit.right); S.oxBad = new Set(m0.storeOX.map((r,i)=>i).filter(i=>S.ox[i]!==m0.storeOX[i][1])); S.tempBad = !!m0.storeTemp && S.temp!==m0.storeTemp;
+  S.badK = new Set(CATS.filter(c=>c.k!=='store').filter(c=>{ const ch=chipById(S.slots[c.k]); return !(ch&&ch.ok); }).map(c=>c.k));
+  S.timesBad = !(S.times!=null && S.times>=t[0] && S.times<=t[1]);
   const ok = CATS.every(c=>{ if(c.k==='store') return S.oxBad.size===0 && !S.tempBad; const ch = chipById(S.slots[c.k]); return ch && ch.ok; }) && S.times!=null && S.times>=t[0] && S.times<=t[1];
   if(!ok){ lose(); S.fixes++; }
   S.phase = 'result'; S.lastOk = ok; S.open = null;
@@ -900,7 +903,7 @@ $app.addEventListener('click', e=>{
     S.fin = +b.dataset.fin; paintFin();
   } else if(b.dataset.times){
     if(S.phase!=='fill') return;
-    S.times = +b.dataset.times; S.open = null; paintWork();
+    S.times = +b.dataset.times; S.timesBad = false; S.open = null; paintWork();
   } else if(b.dataset.dd){
     if(S.phase!=='fill') return;
     S.open = S.open===b.dataset.dd ? null : b.dataset.dd; paintWork();
