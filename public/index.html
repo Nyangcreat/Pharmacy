@@ -944,7 +944,15 @@ $app.addEventListener('drop', e=>{
   }
 });
 
-viewStart();
+/* 수업 종료: 2026-11-09 16:00 (한국 시간) 이후에는 열리지 않아요 */
+const CLOSE_AT = Date.parse('2026-11-09T16:00:00+09:00');
+function viewClosed(){
+  setTitle('약 사용설명서 탐구하기'); $chip.hidden = true;
+  $app.innerHTML = `<section class="hero" style="text-align:center;justify-items:center">
+    <h1>도전! 일일약사 체험기</h1>
+    <p style="font-size:20px;margin:0;line-height:1.7">수업이 끝났어요.<br>함께해 줘서 고마워요!</p></section>`;
+}
+if(Date.now() >= CLOSE_AT) viewClosed(); else viewStart();
 </script>
 
 </body></html>
