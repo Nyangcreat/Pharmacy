@@ -72,6 +72,9 @@ button{font-family:inherit;color:inherit}
   .mission p{font-size:clamp(17px,2.2vw,21px);white-space:normal}
 }
 .mission p.star-rule{white-space:normal;word-break:keep-all;font-size:clamp(13px,3.4vw,16px);font-weight:700;color:#8A6400;background:#FFF4D1;border-radius:99px;padding:4px 14px;line-height:1.5}
+.star-note{display:grid;justify-items:center;gap:2px;margin:0 0 12px;padding:8px 12px;background:#FFF4D1;border-radius:12px;font-size:clamp(13.5px,3.7vw,16px);line-height:1.4;text-align:center;word-break:keep-all}
+.sn-stars{color:#F2B705;letter-spacing:1px;font-size:1.05em}
+input.txt.fixed{background:var(--mint);border-color:var(--mint2);color:var(--ink);font-weight:700;pointer-events:none}
 .hero .lead{font-size:18px;color:var(--muted);max-width:34em}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;list-style:none;padding:0;margin:0;counter-reset:s}
 .steps li{counter-increment:s;background:var(--bg);border-radius:14px;padding:12px 14px;font-weight:500;display:flex;gap:10px;align-items:center}
@@ -545,11 +548,11 @@ function viewStart(){
   $app.innerHTML = `
   <section class="hero">
     <h1>도전! 일일약사 체험기</h1>
-    <div class="mission"><p>상황에 딱 맞는 약을 처방하고,<br>아픈 사람들이 약을 잘못 사용하지 않도록<br>정성껏 복약지도서가 담긴 약봉투를 완성해주세요</p></div>
+    <div class="mission"><p>아픈 사람들이 약을 잘못 사용하지 않도록<br>정성껏 복약지도서가 담긴 약봉투를 완성해주세요</p></div>
     <div class="start-body">
     <form class="name" id="nameForm" novalidate>
       <div class="three">
-        <div><label class="lbl" for="gr">학년</label><input class="txt" id="gr" inputmode="numeric" maxlength="1" autocomplete="off" placeholder="5"></div>
+        <div><label class="lbl" for="gr">학년</label><input class="txt fixed" id="gr" value="5" readonly tabindex="-1" aria-readonly="true"></div>
         <div><label class="lbl" for="cl">반</label><input class="txt" id="cl" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="3"></div>
         <div><label class="lbl" for="no">번호</label><input class="txt" id="no" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="12"></div>
         <div><label class="lbl" for="nm">이름</label><input class="txt" id="nm" maxlength="10" autocomplete="off" placeholder="예: 김하늘"></div>
@@ -587,7 +590,7 @@ function viewStart(){
     </div>
   </section>`;
   const g = id => document.getElementById(id);
-  g('gr').value = S.grade; g('cl').value = S.cls; g('no').value = S.num; g('nm').value = S.name; g('ph').value = S.pharm;
+  g('gr').value = '5'; g('cl').value = S.cls; g('no').value = S.num; g('nm').value = S.name; g('ph').value = S.pharm;
   g('nameForm').addEventListener('submit', e=>{
     e.preventDefault();
     const gr = g('gr').value.trim(), cl = g('cl').value.trim(), no = g('no').value.trim(), nm = g('nm').value.trim(), ph = g('ph').value.trim();
@@ -659,6 +662,7 @@ function viewQuiz(scrollTop){
   $chip.hidden = true; $chip.textContent = `점수 ${S.score}점`;
   $app.innerHTML = `
     <section class="scene" id="scene">
+      <p class="star-note"><span><span class="sn-stars" aria-hidden="true">★★★★★</span> 별 5개로 시작해요!</span><span>틀릴 때마다 별이 <b>반 개씩</b> 줄어요.</span></p>
       <img class="clip" src="${VIDS[sit.vid].pre}" alt="약국에 손님이 찾아와 증상을 말하는 장면">
 <p class="q">${sit.q}</p>
       <div id="pickArea"></div>
