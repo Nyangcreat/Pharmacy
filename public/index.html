@@ -57,6 +57,19 @@ button{font-family:inherit;color:inherit}
 .ms-tag{background:var(--pill);color:#fff;font-family:var(--font-d);font-size:18px;border-radius:99px;padding:3px 14px}
 .mission p{margin:0;font-size:clamp(13px,3.5vw,18px);letter-spacing:-.03em;white-space:nowrap;line-height:1.75;color:var(--ink);word-break:keep-all}
 .mission b{color:var(--pill)}
+.start-body{display:grid;gap:20px;align-items:center}
+.start-art{width:100%;max-width:300px;height:auto;justify-self:center;order:-1}
+.three{display:grid;grid-template-columns:1fr 1fr 2.2fr;gap:8px}
+.three>div{display:grid;gap:4px;min-width:0}
+.three .txt{padding:12px 10px}
+.mission{justify-items:center;text-align:center}
+@media (max-width:560px){.start-art{max-width:170px}}
+@media (min-width:720px){
+  .start-body{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px}
+  .start-art{order:0;max-width:360px}
+  form.name{max-width:none}
+  .mission p{font-size:clamp(17px,2.2vw,21px);white-space:normal}
+}
 .hero .lead{font-size:18px;color:var(--muted);max-width:34em}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;list-style:none;padding:0;margin:0;counter-reset:s}
 .steps li{counter-increment:s;background:var(--bg);border-radius:14px;padding:12px 14px;font-weight:500;display:flex;gap:10px;align-items:center}
@@ -468,16 +481,44 @@ function viewStart(){
   <section class="hero">
     <h1>도전! 일일약사 체험기</h1>
     <div class="mission"><p>상황에 딱 맞는 약을 처방하고,<br>아픈 사람들이 약을 잘못 사용하지 않도록<br>정성껏 복약지도서가 담긴 약봉투를 완성해주세요</p></div>
+    <div class="start-body">
     <form class="name" id="nameForm" novalidate>
-      <div class="two">
+      <div class="three">
         <div><label class="lbl" for="gr">학년</label><input class="txt" id="gr" inputmode="numeric" maxlength="1" autocomplete="off" placeholder="5"></div>
         <div><label class="lbl" for="cl">반</label><input class="txt" id="cl" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="3"></div>
+        <div><label class="lbl" for="nm">이름</label><input class="txt" id="nm" maxlength="10" autocomplete="off" placeholder="예: 김하늘"></div>
       </div>
-      <div><label class="lbl" for="nm">이름</label><span class="nm-note">약봉투에 들어가는 이름이니 정확히 적어 주세요.</span><input class="txt" id="nm" maxlength="10" autocomplete="off" placeholder="예: 김하늘"></div>
+      <span class="nm-note">약봉투에 들어가는 이름이니 정확히 적어 주세요.</span>
       <div><label class="lbl" for="ph">우리 약국 이름</label><div class="phrow"><input class="txt" id="ph" maxlength="10" autocomplete="off" placeholder="예: 튼튼"><span class="sfx">약국</span></div></div>
       <div class="hint" id="nmHint" aria-live="polite"></div>
       <button class="btn" type="submit">일일 약국 입장</button>
     </form>
+    <svg class="start-art" viewBox="0 0 360 300" role="img" aria-label="약봉투와 시럽, 알약 그림">
+      <circle cx="180" cy="160" r="128" fill="var(--mint)"/>
+      <circle cx="292" cy="62" r="5" fill="var(--gold)"/><circle cx="62" cy="88" r="4" fill="var(--pill)"/><circle cx="320" cy="208" r="3.5" fill="var(--green)"/>
+      <path d="M48 214l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="var(--gold)"/>
+      <path d="M300 112l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="var(--gold)"/>
+      <g transform="rotate(-8 140 165)">
+        <rect x="78" y="78" width="132" height="168" rx="10" fill="#FFFFFF" stroke="#3F3A36" stroke-width="4"/>
+        <path d="M78 104h132" stroke="#3F3A36" stroke-width="4"/>
+        <path d="M78 78l66 26 66-26" fill="none" stroke="#3F3A36" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M134 126h20v16h16v20h-16v16h-20v-16h-16v-20h16z" fill="var(--green)"/>
+        <rect x="100" y="196" width="88" height="8" rx="4" fill="var(--mint2)"/>
+        <rect x="112" y="214" width="64" height="8" rx="4" fill="var(--mint2)"/>
+      </g>
+      <g>
+        <rect x="214" y="132" width="76" height="118" rx="14" fill="#E9A23B" stroke="#3F3A36" stroke-width="4"/>
+        <rect x="226" y="108" width="52" height="28" rx="6" fill="#FFFFFF" stroke="#3F3A36" stroke-width="4"/>
+        <rect x="222" y="160" width="60" height="58" rx="8" fill="#FFFFFF"/>
+        <path d="M246 172h12v10h10v12h-10v10h-12v-10h-10v-12h10z" fill="var(--pill)"/>
+        <rect x="222" y="132" width="10" height="110" rx="5" fill="#FFFFFF" opacity=".35"/>
+      </g>
+      <g transform="rotate(28 92 252)"><rect x="66" y="240" width="52" height="24" rx="12" fill="#FFFFFF" stroke="#3F3A36" stroke-width="4"/><path d="M92 240h14a12 12 0 0 1 0 24H92z" fill="var(--pill)" stroke="#3F3A36" stroke-width="4"/></g>
+      <g transform="rotate(-20 168 268)"><rect x="146" y="257" width="44" height="22" rx="11" fill="#FFFFFF" stroke="#3F3A36" stroke-width="4"/><path d="M168 257h11a11 11 0 0 1 0 22h-11z" fill="#4A7FD8" stroke="#3F3A36" stroke-width="4"/></g>
+      <circle cx="306" cy="262" r="13" fill="#FFFFFF" stroke="#3F3A36" stroke-width="4"/><path d="M296 262h20" stroke="#3F3A36" stroke-width="3"/>
+      <circle cx="198" cy="282" r="9" fill="var(--gold)" stroke="#3F3A36" stroke-width="3.5"/>
+    </svg>
+    </div>
   </section>`;
   const g = id => document.getElementById(id);
   g('gr').value = S.grade; g('cl').value = S.cls; g('nm').value = S.name; g('ph').value = S.pharm;
