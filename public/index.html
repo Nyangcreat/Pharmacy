@@ -465,7 +465,7 @@ function pouchHTML(fk){
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
-      <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사<span class="wp">(<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.num)}번 ${esc(S.name)}</b>)</span></span></div>
+      <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사<span class="wp">(&nbsp;<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.num)}번 ${esc(S.name)}</b>&nbsp;)</span></span></div>
     </div>
     ${fk===undefined?timesList():''}
   </div></div>`;
