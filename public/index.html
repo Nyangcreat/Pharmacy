@@ -248,6 +248,8 @@ textarea.share{width:100%;min-height:150px;font:inherit;font-size:15px;padding:1
   @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 }
 
+.lf .dn{container-type:inline-size}
+.lf .one{display:block;white-space:nowrap;font-size:min(1em,3.5cqw);letter-spacing:-.03em}
 .lf{background:#F3F1EA;color:#2B2926;border:2px solid #CFC9BA;border-top:8px solid var(--c);border-radius:4px;padding:14px clamp(12px,3vw,20px) 16px;font-size:14px;line-height:1.5}
 .lf header{border-bottom:3px double #8A8577;padding-bottom:6px;margin-bottom:10px}
 .lf h3{font-size:clamp(22px,5vw,28px);color:#2B2926}
@@ -380,7 +382,7 @@ const MEDS = [
  {id:'cold', storeOX:[['기밀용기에 보관',true],['어린이의 손이 닿지 않는 곳에 보관',true]], storeTemp:'실온', storeWrong:['밀폐용기, 실온(1~30℃) 보관\n어린이의 손이 닿지 않는 곳에 보관','차광기밀용기, 실온(1~30℃) 보관\n어린이의 손이 닿지 않는 곳에 보관','기밀용기, 실온(1~30℃) 보관\n직사광선을 피하고 습기가 적은 서늘한 곳에 보관'], p2name:'종합감기약', easy:'감기로 인한 발열, 기침, 콧물, 코막힘, 가래', name:'콜*원', sub:'종합감기약', short:'기침 · 가래 · 콧물 · 열', color:'#D9472C',
   ing:'아세트아미노펜, 덱스트로메토르판, 구아이페네신 등',
   use:'감기로 인한 발열, 기침, 콧물, 코막힘, 가래',
-  doseNote:'아래 1회 용량을 <b><u>매 식후</u></b> 및 필요한 경우 <b><u>취침 시</u></b>에 복용하세요.\n복용 간격은 <b><u>4시간</u></b>으로 하세요.', doseFoot:'만 2세 미만은 복용하지 마세요.',
+  doseNote:'<span class="one">아래 1회 용량을 <b><u>매 식후</u></b> 및 필요한 경우 <b><u>취침 시</u></b>에 복용.</span><span class="one">복용 간격은 <b><u>4시간</u></b>으로 하세요.</span>', doseFoot:'만 2세 미만은 복용하지 마세요.',
   times:[3,4],
   rows:[['만 2세 이상~만 3세 미만','1회 5mL'],['만 3세 이상~만 7세 미만','1회 6.5mL'],['만 7세 이상~만 11세 미만','1회 10mL'],['만 11세 이상~만 15세 미만','1회 13mL']], mine:2,
   caution:['해열진통제나 다른 감기약과 함께 복용하지 마세요.'],
