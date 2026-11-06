@@ -235,7 +235,7 @@ textarea.share{width:100%;min-height:150px;font:inherit;font-size:15px;padding:1
 .lf table{border-collapse:collapse;width:100%;font-size:13px}
 .lf th,.lf td{border:1px solid #B9B3A3;padding:3px 6px;text-align:left;vertical-align:top}
 .lf th{background:#E4E0D3;width:64%;font-weight:700;letter-spacing:-.02em}
-.lf .wn{background:#FFF3B8;padding:4px 8px;border-radius:4px}
+.lf .wn{}
 .scene p.me{font-size:14px;color:var(--muted);margin:0 0 6px}
 .ch b .sb{font-weight:400;margin-left:6px}
 .ch mark.yl{background:#FFE35C;color:#3F3A36;padding:0 5px;border-radius:4px;font-weight:700}
@@ -433,7 +433,7 @@ fresh();
 const shuffle = a => { const r=a.slice(); for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]];} return r; };
 const med = id => MEDS.find(m=>m.id===id);
 const total = () => S.score;
-const lose = () => { S.score = Math.max(0, S.score-1); $chip.hidden = false; $chip.textContent = `점수 ${S.score}점`; };
+const lose = () => { S.score = Math.max(0, S.score-1); $chip.hidden = true; $chip.textContent = `점수 ${S.score}점`; };
 const toTop = () => { try{window.scrollTo(0,0)}catch(e){} };
 const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const whoName = () => `${S.grade}학년 ${S.cls}반 ${S.num}번 ${S.name}`;
@@ -596,7 +596,7 @@ const chipById = id => S.chips.find(c=>c.id===id);
 function viewQuiz(scrollTop){
   if(scrollTop) toTop();
   const sit = SITS[S.i];
-  $chip.hidden = false; $chip.textContent = `점수 ${S.score}점`;
+  $chip.hidden = true; $chip.textContent = `점수 ${S.score}점`;
   $app.innerHTML = `
     <section class="scene" id="scene">
       <img class="clip" src="${VIDS[sit.vid].pre}" alt="약국에 손님이 찾아와 증상을 말하는 장면">
@@ -622,7 +622,7 @@ function paintPick(){
     return `<button type="button" class="${cls}" data-pick="${c.id}" ${picked?'disabled':''}><b>${c.p2name||c.name}${(!c.p2name&&c.sub)?`<span class="sb">${c.sub}</span>`:''}</b><span><mark class="yl">효능·효과</mark>: ${c.easy||c.use}</span></button>`;
   }).join('');
   let fb='';
-  if(!picked && S.viewId){ fb = `<div class="fb no" role="status"><strong>아쉬워요. 이 약은 지금 상황과 맞지 않아요. -1점</strong>${(sit.wrong&&sit.wrong[S.viewId])?sit.wrong[S.viewId]+' ':''}효능·효과를 다시 읽고 골라 보세요.</div>`; }
+  if(!picked && S.viewId){ fb = `<div class="fb no" role="status"><strong>아쉬워요. 이 약은 지금 상황과 맞지 않아요.</strong>${(sit.wrong&&sit.wrong[S.viewId])?sit.wrong[S.viewId]+' ':''}효능·효과를 다시 읽고 골라 보세요.</div>`; }
   if(picked){
     if(pickOk){
       fb = `<div class="fb ok" role="status"><strong>정답이에요!</strong>${sit.why}</div>`;
@@ -746,7 +746,7 @@ function deliver(){
        <div class="fb ok" role="status"><strong>손님이 만족했어요!</strong>복약지도서를 정확하게 완성했어요.</div>
        <div class="bar"><span></span><button class="btn" id="seeDone" type="button">완성된 복약지도서 보기</button></div>`
     : `<h3 class="rs-h">약을 건네요</h3><img class="clip" id="rv" src="${v.bad}" alt="손님이 이상하다며 다시 설명해 달라고 하는 장면">
-       <div class="fb no" role="status"><strong>손님: "뭔가 이상해요. 다시 설명해 주세요." -1점</strong>복약지도서에 설명서와 다른 칸이 있어요. 설명서를 다시 읽고 고쳐 보세요.${(S.oxBad.size||S.tempBad)?' 보관 방법에서 빨갛게 표시된 줄을 다시 확인해요.':''}</div>
+       <div class="fb no" role="status"><strong>손님: "뭔가 이상해요. 다시 설명해 주세요."</strong>복약지도서에 설명서와 다른 칸이 있어요. 설명서를 다시 읽고 고쳐 보세요.${(S.oxBad.size||S.tempBad)?' 보관 방법에서 빨갛게 표시된 줄을 다시 확인해요.':''}</div>
        <div class="bar"><span></span><button class="btn" id="refix" type="button">복약지도서 다시 확인하기</button></div>`;
   paintPick(); toTop();
 }
