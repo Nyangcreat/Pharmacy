@@ -694,7 +694,7 @@ function paintWork(){
       <button type="button" class="${cls}" data-slot="${c.k}" ${chip && !checked ? `data-unplace="${c.k}" title="누르면 보기 예시로 돌아가요"`:''} ${checked?'disabled':''}>${body}</button>${ans}${c.k==='dose'?timesNote():''}</div>`;
   }).join('');
   w.innerHTML = `
-    <p class="guide"><span class="g-tag">활동방법</span>약 사용설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
+    <p class="guide"><span class="g-tag">활동방법</span>설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
     <details class="fold${S.lfSeen?'':' nudge'}" id="fold" ${S.lfOpen?'open':''}>
       <summary><span>약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
       ${leaflet(med(S.pickId))}
@@ -716,7 +716,7 @@ function paintCheck(){
   const bar = document.getElementById('checkBar'); if(!bar) return;
   if(S.phase==='fill'){
     const n = filledCount();
-    bar.innerHTML = `<span class="count">채운 칸 ${n} / ${CATS.length}</span><button class="btn" type="button" id="check" ${(n<CATS.length||S.times==null)?'disabled':''}>제공하기</button>`;
+    bar.innerHTML = `<span class="count"></span><button class="btn" type="button" id="check" ${(n<CATS.length||S.times==null)?'disabled':''}>제공하기</button>`;
   } else if(S.phase==='checked'){
     const r = S.res[S.i];
     bar.innerHTML = `<span class="count">복약지도서 ${r.fill} / ${CATS.length}칸 정답</span>`;
