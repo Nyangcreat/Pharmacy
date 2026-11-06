@@ -162,6 +162,8 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch .inner{background:var(--mint2);width:100%;padding:16px 14px;border-radius:4px;display:grid;gap:12px;font-weight:500}
 .pouch .ln.to{align-items:center}
 .pouch .face{width:44px;height:44px;border-radius:50%;border:2px solid var(--green);background:#fff;flex:none;margin-right:2px}
+.pouch .stars{position:absolute;top:10px;right:10px;display:flex;gap:1px;z-index:2}
+.pouch .stars svg{width:20px;height:20px}
 .pouch .ln{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--green);padding-bottom:2px}
 .pouch .ln b{flex:1;font-weight:700;overflow-wrap:anywhere}
 .pouch .ln.r{justify-content:flex-end;border:0}
@@ -441,10 +443,18 @@ const whoName = () => `${S.grade}학년 ${S.cls}반 ${S.num}번 ${S.name}`;
 const pharmName = () => S.pharm.replace(/\s*약국$/,'').trim() + '약국';
 
 /* the 내복약 pouch from the class worksheet, personalised */
+function starsHTML(v){
+  const P='M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z';
+  let h='';
+  for(let i=0;i<5;i++){ const f=Math.max(0,Math.min(1,v-i));
+    h+=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${P}" fill="#E4DCC8"/>${f>=1?`<path d="${P}" fill="#F2B705"/>`:f>0?`<defs><clipPath id="sh${i}"><rect x="0" y="0" width="12" height="24"/></clipPath></defs><path d="${P}" fill="#F2B705" clip-path="url(#sh${i})"/>`:''}<path d="${P}" fill="none" stroke="#C99A1E" stroke-width="1.2"/></svg>`; }
+  return `<div class="stars" role="img" aria-label="별 ${v}개">${h}</div>`;
+}
 function pouchHTML(fk){
   const dt = new Date();
   const date = `${dt.getFullYear()}년 ${dt.getMonth()+1}월 ${dt.getDate()}일`;
-  return `<div class="pouch"><div class="frame">
+  const st = (fk!==undefined && S.starsBy && S.starsBy[fk]!=null) ? starsHTML(S.starsBy[fk]) : '';
+  return `<div class="pouch">${st}<div class="frame">
     <svg class="cross" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 6h16v18h18v16H40v18H24V40H6V24h18z" fill="var(--green)"/></svg>
     <h4><i>◇◇</i>내 복 약<i>◇◇</i></h4>
     <div class="inner">
@@ -779,6 +789,7 @@ function viewResult(){
       <span class="ok-msg" id="cmsg" role="status"></span>
     </div>
     ${left>0?'':'<p class="sub" style="margin-top:12px">모든 상황을 해결했어요!</p>'}`;
+  (S.starsBy ||= {})[S.i] = Math.max(0, S.score)/2;
   S.fin = S.i; paintFin();
   document.getElementById('saveImg').addEventListener('click', saveImage); getDl();
   const more = document.getElementById('more');
