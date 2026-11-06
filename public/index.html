@@ -166,6 +166,18 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch .stars{position:absolute;top:10px;right:10px;display:flex;gap:1px;z-index:2}
 .pouch .stars svg{width:20px;height:20px}
 .pouch .ln.pt{word-break:keep-all;line-height:1.5}
+.tipsbox{background:var(--mint);border-radius:10px;padding:14px;margin-top:14px}
+.tipsbox .lab{display:inline-block;background:var(--pill);color:#fff;border-radius:99px;padding:1px 16px;font-size:14px;font-weight:700}
+.tipsbox ol{margin:8px 0 0;padding-left:1.3em;display:grid;gap:12px}
+.tipsbox li p{margin:0 0 6px;font-size:15px;line-height:1.6;word-break:keep-all}
+.tipsbox .gap{display:inline-block;min-width:3em;border-bottom:2px solid var(--green);text-align:center;font-weight:700}
+.tipsbox .ddb .bad,.tipsbox .ddb.bad{}
+.ddb.bad{border-style:solid}
+.tipsbox.done{margin-top:0;background:var(--surface);border:2px solid var(--line)}
+.tipsbox.done ol{gap:4px}
+.tipsbox.done li{font-size:14px;line-height:1.7;word-break:keep-all}
+.tipsbox.done u{text-decoration:none;font-weight:700;border-bottom:2px solid var(--green);padding:0 4px}
+.spread .pg.wide{grid-column:1/-1;padding-top:14px}
 .pouch .tips{border-bottom:2px solid var(--green);padding:2px 0 8px;text-align:left}
 .pouch .tips-h{display:block;font-size:.95em;margin-bottom:4px}
 .pouch .tips ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.92em;line-height:1.7;word-break:keep-all}
@@ -419,19 +431,15 @@ const TIPS = [
   {pre:'약', post:'는 버리지 말고 약과 함께 보관하세요.', ans:'케이스와 설명서', opts:['케이스와 설명서','영수증','비닐봉투','약병 뚜껑']},
   {pre:'유효기간이 지난 약은 약국이나 보건소의', post:'에 버려주세요.', ans:'폐의약품 수거함', opts:['폐의약품 수거함','일반 쓰레기통','싱크대 하수구','재활용 분리수거함']}
 ];
-function tipsHTML(fk){
-  const done = fk!==undefined;
+function tipsHTML(done){
   const rows = TIPS.map((t,i)=>{
-    let b;
-    if(done) b = `<span class="tb fin">${t.ans}</span>`;
-    else {
-      const v = S.tips[i], bad = S.tipBad.has(i);
-      b = `<button type="button" class="tb${v?' has':''}${bad?' bad':''}${S.open==='tip'+i?' open':''}" data-tip="${i}" aria-label="빈칸 고르기">${v?esc(v):'&nbsp;'}</button>`;
-    }
-    const list = (!done && S.phase==='fill' && S.open==='tip'+i) ? `<div class="p3 tipl" role="listbox">${S.tipOpts[i].map(o=>`<button type="button" class="p3b${S.tips[i]===o?' on':''}" role="option" data-tipv="${i}" data-val="${o}">${o}</button>`).join('')}</div>` : '';
-    return `<li>${t.pre?t.pre+' ':''}(${b})${t.post}${list}</li>`;
+    if(done) return `<li>${t.pre?t.pre+' ':''}( <u>${t.ans}</u> )${t.post}</li>`;
+    const v = S.tips[i], bad = S.tipBad.has(i), open = S.open==='tip'+i;
+    const list = (S.phase==='fill' && open) ? `<div class="p3" role="listbox">${S.tipOpts[i].map(o=>`<button type="button" class="p3b${S.tips[i]===o?' on':''}" role="option" data-tipv="${i}" data-val="${o}">${o}</button>`).join('')}</div>` : '';
+    return `<li><p>${t.pre?t.pre+' ':''}( <span class="gap">${v?esc(v):'&nbsp;'.repeat(8)}</span> )${t.post}</p>
+      <button type="button" class="ddb${v?' has':''}${open?' open':''}${bad?' bad':''}" data-tip="${i}" aria-expanded="${open}"><span>${v?esc(v):'눌러서 고르기'}</span><i aria-hidden="true">▾</i></button>${list}</li>`;
   }).join('');
-  return `<div class="tips"><b class="tips-h">💊 약사의 당부</b><ul>${rows}</ul></div>`;
+  return `<div class="tipsbox${done?' done':''}"><span class="lab">약사의 당부</span><ol>${rows}</ol></div>`;
 }
 function timesBlank(fk){
   const sit=SITS[fk===undefined?S.i:fk], t=timesOf(med(sit.right),sit.age);
@@ -496,7 +504,6 @@ function pouchHTML(fk){
       <div class="ln to"><img class="face" src="face/${SITS[fk===undefined?S.i:fk].vid}.png" alt=""><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
       ${(st0=>`<div class="ln pt"><span>만 ${st0.age}세 / ${st0.sex}${st0.weight?` / ${st0.weight}kg`:''}</span></div><div class="ln pt"><span>증상 : ${st0.sum}</span></div>`)(SITS[fk===undefined?S.i:fk])}
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
-      ${tipsHTML(fk)}
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
       <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사<span class="wp">(&nbsp;<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.num)}번 ${esc(S.name)}</b>&nbsp;)</span></span></div>
@@ -733,6 +740,7 @@ function paintWork(){
       ${pouchHTML()}
       <div class="fields">${fields}</div>
     </div>
+    ${tipsHTML(false)}
     <p class="tip" id="tip" role="status">${S.tip||''}</p>
     <div class="bar" id="checkBar"></div>`;
   const fd = document.getElementById('fold');
@@ -907,6 +915,7 @@ function paintFin(){
       ${pouchHTML(k)}
     </div>
     <div class="pg r"><div class="fields">${fields}</div></div>
+    <div class="pg wide">${tipsHTML(true)}</div>
   </div></div>`;
   fitSpread();
 }
