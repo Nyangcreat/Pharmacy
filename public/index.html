@@ -49,7 +49,8 @@ button{font-family:inherit;color:inherit}
 /* start */
 .hero{background:var(--surface);border:2px solid var(--line);border-radius:28px;padding:clamp(20px,5vw,44px);display:grid;gap:22px}
 .hero h1{font-size:clamp(34px,8vw,54px);line-height:1.15;text-align:center}
-.pouch .by{white-space:nowrap;letter-spacing:-.03em}
+.pouch .by{letter-spacing:-.03em;text-align:center}
+.pouch .by .wp{display:block;white-space:nowrap}
 .pouch .by .who{font-weight:800}
 .pouch .byl .by{font-size:1.1em}
 .nm-note{display:block;font-size:13px;color:var(--muted);margin:2px 0 6px;font-weight:500}
@@ -59,9 +60,9 @@ button{font-family:inherit;color:inherit}
 .mission b{color:var(--pill)}
 .start-body{display:grid;gap:20px;align-items:center}
 .start-art{width:100%;max-width:300px;height:auto;justify-self:center;order:-1}
-.three{display:grid;grid-template-columns:1fr 1fr 2.2fr;gap:8px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr 2.4fr;gap:8px}
 .three>div{display:grid;gap:4px;min-width:0}
-.three .txt{padding:12px 10px}
+.three .txt{padding:12px 8px;font-size:17px}
 .mission{justify-items:center;text-align:center}
 @media (max-width:560px){.start-art{max-width:170px}}
 @media (min-width:720px){
@@ -159,6 +160,8 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch h4{font-size:24px;letter-spacing:.4em;padding-left:.4em;display:flex;gap:10px;align-items:center}
 .pouch h4 i{font-style:normal;color:var(--green);font-size:14px;letter-spacing:0}
 .pouch .inner{background:var(--mint2);width:100%;padding:16px 14px;border-radius:4px;display:grid;gap:12px;font-weight:500}
+.pouch .ln.to{align-items:center}
+.pouch .face{width:44px;height:44px;border-radius:50%;border:2px solid var(--green);background:#fff;flex:none;margin-right:2px}
 .pouch .ln{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--green);padding-bottom:2px}
 .pouch .ln b{flex:1;font-weight:700;overflow-wrap:anywhere}
 .pouch .ln.r{justify-content:flex-end;border:0}
@@ -257,6 +260,7 @@ details.fold summary em{font-style:normal;font-size:13px;color:#fff;background:v
 details.fold[open] summary{border-bottom:2px dashed #CFC9BA}
 details.fold .lf{border:0;border-radius:0 0 8px 8px;margin:0}
 .spread-wrap{width:100%;max-width:100%;overflow:hidden;margin-top:10px}
+.spread .pg{min-width:0}
 .spread{width:640px;display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:18px;transform-origin:0 0;box-shadow:0 6px 18px rgba(60,40,20,.10)}
 .spread .pg{display:grid;gap:12px;align-content:start;min-width:0}
 .spread .pg.l{padding-right:12px;border-right:2px dashed var(--line)}
@@ -290,7 +294,8 @@ details.fold .lf{border:0;border-radius:0 0 8px 8px;margin:0}
 .sv-box{background:var(--surface);border-radius:18px;padding:16px;max-width:680px;width:100%;display:grid;gap:12px}
 .sv-box img{width:100%;height:auto;border:2px solid var(--line);border-radius:10px;-webkit-touch-callout:default;user-select:auto}
 .sv-h{text-align:center;font-size:16px;margin:0}
-.guide{margin:-2px 0 14px;text-align:center;font-weight:700;font-size:clamp(14px,4.2vw,19px);line-height:1.45;white-space:nowrap;letter-spacing:-.02em;color:var(--ink)}
+.g-tag{display:inline-block;background:var(--pill);color:#fff;border-radius:99px;padding:1px 12px;margin-right:8px;font-size:.88em;vertical-align:1px}
+.guide{margin:-2px 0 14px;text-align:center;font-weight:700;font-size:clamp(14px,3.9vw,19px);line-height:1.6;word-break:keep-all;letter-spacing:-.02em;color:var(--ink)}
 .clip{display:block;width:100%;max-width:440px;margin:0 auto 14px;border-radius:18px;background:#F4F4F2;aspect-ratio:480/516;object-fit:cover}
 .result{margin-bottom:16px}
 .rs-h{font-size:clamp(22px,4.5vw,28px);margin-bottom:10px;text-align:center}
@@ -421,7 +426,7 @@ const setTitle = t => { const e=document.getElementById('brandTxt'); if(e) e.tex
 let S;
 function fresh(p){
   p = p || {};
-  S = {grade:p.grade||'', cls:p.cls||'', name:p.name||'', pharm:p.pharm||'', fin:0, opened:new Set(), sel:null, i:0, res:[], pickId:null, phase:'pick', chips:[], slots:{}, filter:'all', refOpen:false, refSel:null, tip:''};
+  S = {grade:p.grade||'', cls:p.cls||'', num:p.num||'', name:p.name||'', pharm:p.pharm||'', fin:0, opened:new Set(), sel:null, i:0, res:[], pickId:null, phase:'pick', chips:[], slots:{}, filter:'all', refOpen:false, refSel:null, tip:''};
 }
 fresh();
 
@@ -431,7 +436,7 @@ const total = () => S.score;
 const lose = () => { S.score = Math.max(0, S.score-1); $chip.hidden = false; $chip.textContent = `점수 ${S.score}점`; };
 const toTop = () => { try{window.scrollTo(0,0)}catch(e){} };
 const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const whoName = () => `${S.grade}학년 ${S.cls}반 ${S.name}`;
+const whoName = () => `${S.grade}학년 ${S.cls}반 ${S.num}번 ${S.name}`;
 const pharmName = () => S.pharm.replace(/\s*약국$/,'').trim() + '약국';
 
 /* the 내복약 pouch from the class worksheet, personalised */
@@ -442,11 +447,11 @@ function pouchHTML(fk){
     <svg class="cross" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 6h16v18h18v16H40v18H24V40H6V24h18z" fill="var(--green)"/></svg>
     <h4><i>◇◇</i>내 복 약<i>◇◇</i></h4>
     <div class="inner">
-      <div class="ln"><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
+      <div class="ln to"><img class="face" src="face/${SITS[fk===undefined?S.i:fk].vid}.png" alt=""><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
-      <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사 (<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.name)}</b>)</span></div>
+      <div class="ln r c${fk===undefined?'':' byl'}"><span class="by">일일약사<span class="wp">(<b class="who" style="color:${S.color||'#2E8B57'}">${esc(S.grade)}학년 ${esc(S.cls)}반 ${esc(S.num)}번 ${esc(S.name)}</b>)</span></span></div>
     </div>
     ${fk===undefined?timesList():''}
   </div></div>`;
@@ -486,6 +491,7 @@ function viewStart(){
       <div class="three">
         <div><label class="lbl" for="gr">학년</label><input class="txt" id="gr" inputmode="numeric" maxlength="1" autocomplete="off" placeholder="5"></div>
         <div><label class="lbl" for="cl">반</label><input class="txt" id="cl" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="3"></div>
+        <div><label class="lbl" for="no">번호</label><input class="txt" id="no" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="12"></div>
         <div><label class="lbl" for="nm">이름</label><input class="txt" id="nm" maxlength="10" autocomplete="off" placeholder="예: 김하늘"></div>
       </div>
       <span class="nm-note">약봉투에 들어가는 이름이니 정확히 적어 주세요.</span>
@@ -521,14 +527,14 @@ function viewStart(){
     </div>
   </section>`;
   const g = id => document.getElementById(id);
-  g('gr').value = S.grade; g('cl').value = S.cls; g('nm').value = S.name; g('ph').value = S.pharm;
+  g('gr').value = S.grade; g('cl').value = S.cls; g('no').value = S.num; g('nm').value = S.name; g('ph').value = S.pharm;
   g('nameForm').addEventListener('submit', e=>{
     e.preventDefault();
-    const gr = g('gr').value.trim(), cl = g('cl').value.trim(), nm = g('nm').value.trim(), ph = g('ph').value.trim();
-    if(!/^\d{1,2}$/.test(gr) || !/^\d{1,2}$/.test(cl)){ g('nmHint').textContent='학년과 반을 숫자로 적어 주세요.'; return; }
+    const gr = g('gr').value.trim(), cl = g('cl').value.trim(), no = g('no').value.trim(), nm = g('nm').value.trim(), ph = g('ph').value.trim();
+    if(!/^\d{1,2}$/.test(gr) || !/^\d{1,2}$/.test(cl) || !/^\d{1,2}$/.test(no)){ g('nmHint').textContent='학년, 반, 번호를 숫자로 적어 주세요.'; return; }
     if(!nm){ g('nmHint').textContent='이름을 적어 주세요.'; return; }
     if(!ph){ g('nmHint').textContent='우리 약국 이름을 정해 주세요.'; return; }
-    S.grade = gr; S.cls = cl; S.name = nm; S.pharm = ph;
+    S.grade = gr; S.cls = cl; S.num = no; S.name = nm; S.pharm = ph;
     if(!S.color){ const C=['#A87400','#2F6FD6','#2E8B57','#E0559A']; S.color=C[Math.floor(Math.random()*C.length)]; }
     startGame();
   });
@@ -672,7 +678,7 @@ function paintWork(){
   w.innerHTML = `
     <div class="how">
       <p style="margin:0;font-size:16px;line-height:1.7">환자정보: <strong>만 ${SITS[S.i].age}세 / ${SITS[S.i].sex}${SITS[S.i].weight?` / ${SITS[S.i].weight}kg`:''}</strong><br>증상: <strong>${SITS[S.i].sum}</strong></p></div>
-    <p class="guide">약 설명서를 읽고 아래 약봉투를 완성해보세요</p>
+    <p class="guide"><span class="g-tag">활동방법</span>약 사용설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
     <details class="fold" id="fold" ${S.lfOpen?'open':''}>
       <summary><span>약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
       ${leaflet(med(S.pickId))}
