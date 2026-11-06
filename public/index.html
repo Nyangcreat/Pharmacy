@@ -426,7 +426,7 @@ const rowFor=(m,age)=>{ if(m.pickRow){ const st=ALL_SITS.find(x=>x.right===m.id&
 const timesOf=(m,age)=>{ if(m.times) return m.times; const x=rowFor(m,age)[1].match(/1일\s*(\d)(?:~(\d))?회/); return x?[+x[1],+(x[2]||x[1])]:[3,3]; };
 const timesTxt=t=>t[0]===t[1]?`${t[0]}`:`${t[0]}~${t[1]}`;
 const TIPS = [
-  {pre:'', post:'이(가) 처방받은 약만 먹어요.', ans:'나', opts:['나','가족','친구','아픈 사람 누구나']},
+  {pre:'', post:' 처방받은 약만 먹어요.', ans:'내가', opts:['내가','가족이','친구가','누구든 증상이 같은 사람이']},
   {pre:'약은 충분한 양의 미지근한', post:'와(과) 함께 드세요.', ans:'물', opts:['물','우유','주스','탄산음료']},
   {pre:'약', post:'는 버리지 말고 약과 함께 보관하세요.', ans:'케이스와 설명서', opts:['케이스와 설명서','영수증','비닐봉투','약병 뚜껑']},
   {pre:'유효기간이 지난 약은 약국이나 보건소의', post:'에 버려주세요.', ans:'폐의약품 수거함', opts:['폐의약품 수거함','일반 쓰레기통','싱크대 하수구','재활용 분리수거함']}
