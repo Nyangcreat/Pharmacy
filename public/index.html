@@ -168,6 +168,7 @@ details.ref .leaflet{margin-bottom:10px}
 .pouch .face{width:44px;height:44px;border-radius:50%;border:2px solid var(--green);background:#fff;flex:none;margin-right:2px}
 .pouch .stars{position:absolute;top:10px;right:10px;display:flex;gap:1px;z-index:2}
 .pouch .stars svg{width:20px;height:20px}
+.pouch .agesex{color:#2F6FD6;font-weight:800}
 .pouch .ln.pt{word-break:keep-all;line-height:1.5}
 .tipsbox{background:var(--mint);border-radius:10px;padding:14px;margin-top:14px}
 .tipsbox .lab{display:inline-block;background:var(--pill);color:#fff;border-radius:99px;padding:1px 16px;font-size:14px;font-weight:700}
@@ -293,6 +294,7 @@ details.ref .lf{margin-bottom:10px}
 .how-h span{font-weight:700;font-size:clamp(12px,3.6vw,15px);white-space:nowrap;letter-spacing:-.02em}
 details.fold{margin:0 0 14px;background:#F3F1EA;border:2px solid var(--bad);border-radius:10px;box-shadow:0 3px 0 #DDD7C8, 0 6px 0 #E8E3D6}
 details.fold:not([open]) summary{border-radius:8px}
+@media (max-width:560px){details#fold summary{justify-content:flex-start;padding:12px 116px 12px 14px;font-size:16px;text-align:left}}
 details.fold summary{background:#FFE27A;border-radius:8px 8px 0 0;list-style:none;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center;padding:12px 96px;min-height:48px;font-weight:700;font-size:17px;color:#2B2926;text-align:center}
 @keyframes foldPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,71,44,.0),0 3px 0 #DDD7C8}50%{box-shadow:0 0 0 6px rgba(217,71,44,.35),0 3px 0 #DDD7C8}}
 @keyframes pillPulse{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.12)}}
@@ -531,7 +533,7 @@ function pouchHTML(fk){
     <h4><i>◇◇</i>내 복 약<i>◇◇</i></h4>
     <div class="inner">
       <div class="ln to"><img class="face" src="face/${SITS[fk===undefined?S.i:fk].vid}.png" alt=""><b class="nm">${esc(SITS[fk===undefined?S.i:fk].nick)}</b><span>님께</span></div>
-      ${(st0=>`<div class="ln pt"><span>만 ${st0.age}세 / ${st0.sex}${st0.weight?` / ${st0.weight}kg`:''}</span></div><div class="ln pt"><span>증상 : ${st0.sum}</span></div>`)(SITS[fk===undefined?S.i:fk])}
+      ${(st0=>`<div class="ln pt"><span class="agesex">만 ${st0.age}세 / ${st0.sex}${st0.weight?` / ${st0.weight}kg`:''}</span></div><div class="ln pt"><span>증상 : ${st0.sum}</span></div>`)(SITS[fk===undefined?S.i:fk])}
       <div class="ln"><span>1일</span>${timesBlank(fk)}<span>회</span><span class="blank">1</span><span>일분</span></div>
       <div class="ln r"><span>${date}</span></div>
       <div class="ln r c"><b>${esc(pharmName())}</b></div>
@@ -771,7 +773,7 @@ function paintWork(){
   w.innerHTML = `
     <p class="guide"><span class="g-tag">활동방법</span>설명서를 읽고 아래 약봉투 빈칸을 채워 완성해보세요</p>
     <details class="fold${S.lfSeen?'':' nudge'}" id="fold" ${S.lfOpen?'open':''}>
-      <summary><span>약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
+      <summary><span>${esc(med(S.pickId).name)} 약 사용설명서</span><em>${S.lfOpen?'접기':'눌러서 펼치기'}</em></summary>
       ${leaflet(med(S.pickId))}
     </details>
     <div class="sheet">
