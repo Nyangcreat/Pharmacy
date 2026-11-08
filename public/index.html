@@ -175,6 +175,14 @@ details.ref .leaflet{margin-bottom:10px}
 .tipsbox li p{margin:0 0 6px;font-size:15px;line-height:1.6;word-break:keep-all}
 .tipsbox .tin{font:inherit;font-weight:700;width:6.5em;text-align:center;padding:4px 6px;border:2px dashed var(--green);border-radius:8px;background:#fff;color:var(--ink)}
 .tipsbox .tin.bad{border:2px solid var(--bad);background:var(--bad-bg);color:var(--bad)}
+.kindbox{margin:0 0 14px}
+.kindbox .kq{margin:10px 0 0;font-size:15px;line-height:2;word-break:keep-all}
+.kb{font:inherit;font-weight:700;padding:4px 16px;border-radius:99px;border:2px dashed var(--green);background:#fff;color:var(--ink);cursor:pointer}
+.kb.on{border-style:solid;background:var(--green);color:#fff}
+.kb.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.kb:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.spread .pg.r .kindbox.done{margin:12px 0 0}
+.kindbox.done .kq{font-size:14px;line-height:1.7;margin-top:6px}
 .tipsbox .gap{display:inline-block;min-width:3em;border-bottom:2px solid var(--green);text-align:center;font-weight:700}
 .tipsbox .ddb .bad,.tipsbox .ddb.bad{}
 .ddb.bad{border-style:solid}
@@ -449,6 +457,12 @@ function tipsHTML(done){
   }).join('');
   return `<div class="tipsbox${done?' done':''}"><span class="lab">약사의 당부</span><ol>${rows}</ol></div>`;
 }
+function kindHTML(done){
+  const pre = '이 약품은 구입 시 의사 처방전이 필요하지 않은', post = '의약품입니다.';
+  if(done) return `<div class="tipsbox kindbox done"><span class="lab">의약품 종류</span><p class="kq">${pre} ( <u>일반</u> ) ${post}</p></div>`;
+  const b = v => `<button type="button" class="kb${S.kind===v?' on':''}${S.kind===v&&S.kindBad?' bad':''}" data-kind="${v}" aria-pressed="${S.kind===v}">${v}</button>`;
+  return `<div class="tipsbox kindbox"><span class="lab">의약품 종류</span><p class="kq">${pre} ( ${b('일반')} / ${b('전문')} ) ${post}</p></div>`;
+}
 function timesBlank(fk){
   const sit=SITS[fk===undefined?S.i:fk], t=timesOf(med(sit.right),sit.age);
   if(fk!==undefined) return `<span class="blank">${timesTxt(t)}</span>`;
@@ -648,7 +662,7 @@ function buildChips(medId, age){
 }
 function startSit(){
   S.ox = {}; S.badK = new Set(); S.timesBad = false; S.oxBad = new Set(); S.oxOrder = null; S.temp = null; S.tempBad = false;
-  S.score = 10; S.fixes = 0; S.tips = {}; S.tipBad = new Set(); S.tipOpts = TIPS.map(t=>{ if(!t.opts) return []; let o; do{ o=shuffle(t.opts.slice()); }while(o[0]===t.ans); return o; }); S.lfSeen = false; S.lfOpen = false;
+  S.score = 10; S.fixes = 0; S.tips = {}; S.tipBad = new Set(); S.kind = null; S.kindBad = false; S.tipOpts = TIPS.map(t=>{ if(!t.opts) return []; let o; do{ o=shuffle(t.opts.slice()); }while(o[0]===t.ans); return o; }); S.lfSeen = false; S.lfOpen = false;
   S.open = null; S.page = 1; S.wp = 1; S.times = null; S.tried = new Set(); S.viewId = null; S.firstTry = null; S.pickId = null; S.phase = 'pick'; S.slots = {}; S.filter = 'all'; S.tip = '';
   S.chips = buildChips(SITS[S.i].right, SITS[S.i].age);
   S.opts = {}; CATS.forEach(c=>{ const good=S.chips.filter(x=>x.cat===c.k&&x.ok); const bad=shuffle(S.chips.filter(x=>x.cat===c.k&&!x.ok)).slice(0,3); S.opts[c.k]=shuffle(good.concat(bad)); });
@@ -742,6 +756,7 @@ function paintWork(){
   if(S.wp===2){
     w.innerHTML = `
     <p class="guide"><span class="g-tag">활동방법</span>배운 약 사용법을 떠올려 빈칸을 채워보세요</p>
+    ${kindHTML(false)}
     ${tipsHTML(false)}
     <div class="bar" id="checkBar"></div>`;
     paintCheck(); return;
@@ -770,7 +785,7 @@ function paintCheck(){
   if(S.phase==='fill'){
     const n = filledCount();
     bar.innerHTML = S.wp===2
-      ? `<button class="btn ghost" type="button" id="wpBack">이전</button><button class="btn" type="button" id="check" ${TIPS.some((t,i)=>!String(S.tips[i]||'').trim())?'disabled':''}>제공하기</button>`
+      ? `<button class="btn ghost" type="button" id="wpBack">이전</button><button class="btn" type="button" id="check" ${(!S.kind||TIPS.some((t,i)=>!String(S.tips[i]||'').trim()))?'disabled':''}>제공하기</button>`
       : `<span class="count"></span><button class="btn" type="button" id="wpNext" ${(n<CATS.length||S.times==null)?'disabled':''}>다음</button>`;
   } else if(S.phase==='checked'){
     const r = S.res[S.i];
@@ -810,8 +825,9 @@ function deliver(){
   const m0 = med(sit.right); S.oxBad = new Set(m0.storeOX.map((r,i)=>i).filter(i=>S.ox[i]!==m0.storeOX[i][1])); S.tempBad = !!m0.storeTemp && S.temp!==m0.storeTemp;
   S.badK = new Set(CATS.filter(c=>c.k!=='store').filter(c=>{ const ch=chipById(S.slots[c.k]); return !(ch&&ch.ok); }).map(c=>c.k));
   S.timesBad = !(S.times!=null && S.times>=t[0] && S.times<=t[1]);
+  S.kindBad = S.kind!=='일반';
   S.tipBad = new Set(TIPS.map((x,i)=>i).filter(i=>String(S.tips[i]||'').replace(/\s/g,'')!==TIPS[i].ans.replace(/\s/g,'')));
-  const ok = CATS.every(c=>{ if(c.k==='store') return S.oxBad.size===0 && !S.tempBad; const ch = chipById(S.slots[c.k]); return ch && ch.ok; }) && S.times!=null && S.times>=t[0] && S.times<=t[1] && S.tipBad.size===0;
+  const ok = CATS.every(c=>{ if(c.k==='store') return S.oxBad.size===0 && !S.tempBad; const ch = chipById(S.slots[c.k]); return ch && ch.ok; }) && S.times!=null && S.times>=t[0] && S.times<=t[1] && S.tipBad.size===0 && !S.kindBad;
   if(!ok){ lose(); S.fixes++; }
   S.phase = 'result'; S.lastOk = ok; S.open = null;
   const v = VIDS[sit.vid];
@@ -931,7 +947,7 @@ function paintFin(){
     <div class="pg l">
       ${pouchHTML(k)}
     </div>
-    <div class="pg r"><div class="fields">${fields}</div></div>
+    <div class="pg r"><div class="fields">${fields}</div>${kindHTML(true)}</div>
     <div class="pg wide">${tipsHTML(true)}</div>
   </div></div>`;
   fitSpread();
@@ -973,6 +989,9 @@ $app.addEventListener('click', e=>{
     S.filter = b.dataset.filter; paintBank();
   } else if(b.dataset.fin){
     S.fin = +b.dataset.fin; paintFin();
+  } else if(b.dataset.kind){
+    if(S.phase!=='fill') return;
+    S.kind = b.dataset.kind; S.kindBad = false; S.open = null; paintWork();
   } else if(b.dataset.tipv!==undefined){
     if(S.phase!=='fill') return;
     const k=+b.dataset.tipv; S.tips[k]=b.dataset.val; S.tipBad.delete(k); S.open=null; paintWork(); paintBank();
@@ -1008,7 +1027,7 @@ $app.addEventListener('click', e=>{
 $app.addEventListener('input', e=>{
   const el = e.target; if(!el.dataset || el.dataset.tipin===undefined || S.phase!=='fill') return;
   const k = +el.dataset.tipin; S.tips[k] = el.value; if(S.tipBad.delete(k)) el.classList.remove('bad');
-  const c = document.getElementById('check'); if(c) c.disabled = TIPS.some((t,i)=>!String(S.tips[i]||'').trim());
+  const c = document.getElementById('check'); if(c) c.disabled = !S.kind || TIPS.some((t,i)=>!String(S.tips[i]||'').trim());
 });
 /* drag and drop (desktop) */
 let dragId = null;
