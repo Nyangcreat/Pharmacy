@@ -181,7 +181,7 @@ details.ref .leaflet{margin-bottom:10px}
 .kb.on{border-style:solid;background:var(--green);color:#fff}
 .kb.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
 .kb:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.spread .pg.r .kindbox.done{margin:12px 0 0}
+.spread .pg.r .kindbox.done{margin:0}
 .kindbox.done .kq{font-size:14px;line-height:1.7;margin-top:6px}
 .tipsbox .gap{display:inline-block;min-width:3em;border-bottom:2px solid var(--green);text-align:center;font-weight:700}
 .tipsbox .ddb .bad,.tipsbox .ddb.bad{}
@@ -312,7 +312,11 @@ details.fold .lf{border:0;border-radius:0 0 8px 8px;margin:0}
 .spread .pg.r{padding-left:12px}
 .spread .sp-info{border:2px solid var(--bad);border-radius:12px;padding:8px 12px;font-size:14px;line-height:1.6}
 .spread .pouch{padding:10px}
-.spread .fields{height:100%}
+.spread .pg.r{gap:8px}
+.spread .pg.l{align-content:stretch;grid-template-rows:1fr}
+.spread .pg.l .pouch{height:100%;box-sizing:border-box;place-items:stretch}
+.spread .pg.l .pouch .frame{height:100%;box-sizing:border-box;grid-template-rows:auto auto 1fr}
+.spread .pg.l .pouch .inner{align-content:space-evenly}
 .ox-tip{font-size:13px;color:var(--muted);margin:6px 0 4px}
 .oxl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .oxl li{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 6px 6px 12px;font-size:14px;line-height:1.45}
@@ -932,7 +936,7 @@ function alertBox(msg){ const m=document.getElementById('cmsg'); if(m) m.textCon
 /* finished 복약지도서 for situation k: shows the right answers, tags the cells the student had to correct */
 function fitSpread(){
   const w = document.getElementById('spWrap'), sp = document.getElementById('spread'); if(!w||!sp) return;
-  const sc = Math.min(1, w.clientWidth / sp.offsetWidth);
+  const sc = Math.min(1.6, w.clientWidth / sp.offsetWidth);
   sp.style.transform = `scale(${sc})`; w.style.height = Math.ceil(sp.offsetHeight*sc)+'px';
 }
 window.addEventListener('resize', fitSpread);
