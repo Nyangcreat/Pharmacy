@@ -1083,7 +1083,12 @@ function viewClosed(){
     <h1>도전! 일일약사 체험기</h1>
     <p style="font-size:20px;margin:0;line-height:1.7">수업이 끝났어요.<br>함께해 줘서 고마워요!</p></section>`;
 }
-if(Date.now() >= CLOSE_AT) viewClosed(); else viewStart();
+function viewPreview(){
+  /* 선생님 확인용: 주소 끝에 #preview 를 붙이면 문제를 풀지 않고 완성 화면으로 바로 가요 */
+  S.grade='5'; S.cls='3'; S.num='1'; S.name='미리보기'; S.pharm='튼튼';
+  SITS = shuffle(ALL_SITS); S.i=0; S.res=[]; S.doneList=[]; startSit(); S.score = 10; viewResult();
+}
+if(Date.now() >= CLOSE_AT) viewClosed(); else if(location.hash==='#preview') viewPreview(); else viewStart();
 </script>
 
 </body></html>
