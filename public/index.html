@@ -1075,8 +1075,8 @@ $app.addEventListener('drop', e=>{
   }
 });
 
-/* 수업 종료: 2026-11-09 14:30 (한국 시간) 이후에는 열리지 않아요 */
-const CLOSE_AT = Date.parse('2026-11-09T14:30:00+09:00');
+/* 수업 종료: 2026-11-09 13:45 (한국 시간) 이후에는 열리지 않아요 */
+const CLOSE_AT = Date.parse('2026-11-09T13:45:00+09:00');
 function viewClosed(){
   setTitle('약 사용설명서 탐구하기'); $chip.hidden = true;
   $app.innerHTML = `<section class="hero" style="text-align:center;justify-items:center">
