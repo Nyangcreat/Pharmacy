@@ -1088,7 +1088,44 @@ function viewPreview(){
   S.grade='5'; S.cls='3'; S.num='1'; S.name='미리보기'; S.pharm='튼튼';
   SITS = shuffle(ALL_SITS); S.i=0; S.res=[]; S.doneList=[]; startSit(); S.score = 10; viewResult();
 }
-if(location.hash==='#preview') viewPreview(); else viewStart();
+/* 선생님 확인용 #test: 답을 넣지 않아도 단계를 넘길 수 있어요 */
+function testFill(){
+  const sit = SITS[S.i], m = med(sit.right);
+  if(S.page===2 && S.wp===1){
+    CATS.forEach(c=>{ if(c.k!=='store'){ const ch=S.chips.find(x=>x.cat===c.k&&x.ok); if(ch) S.slots[c.k]=ch.id; } });
+    m.storeOX.forEach((r,i)=>S.ox[i]=r[1]); if(m.storeTemp) S.temp=m.storeTemp;
+    S.times = timesOf(m, sit.age)[0];
+  } else if(S.page===2 && S.wp===2){
+    S.kind = '일반'; TIPS.forEach((t,i)=>S.tips[i]=t.ans);
+  }
+}
+function testNext(withAns){
+  const click = sel => { const b=document.querySelector(sel); if(b){ b.disabled=false; b.click(); return true; } return false; };
+  if(!SITS || !SITS.length || !document.getElementById('scene')) return;
+  if(S.phase==='pick'){ S.lfSeen = true; click(`[data-pick="${SITS[S.i].right}"]`); return; }
+  if(S.phase==='fill' && S.page===1){ S.lfSeen = true; if(!click('#goFill')){ S.page=2; paintPick(); paintWork(); paintBank(); toTop(); } return; }
+  if(S.phase==='fill'){
+    if(withAns){ testFill(); paintWork(); }
+    if(S.wp===1){ S.wp=2; S.open=null; paintPick(); paintWork(); toTop(); }
+    else deliver();
+    return;
+  }
+  if(S.phase==='result'){ click('#seeDone') || click('#refix'); return; }
+  if(S.phase==='checked'){ click('#next'); }
+}
+function testBar(){
+  const d=document.createElement('div'); d.id='testbar';
+  d.style.cssText='position:fixed;right:12px;bottom:12px;z-index:999;display:flex;gap:8px;flex-wrap:wrap;background:#1F1D1A;padding:8px;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.3)';
+  d.innerHTML='<span style="color:#FFE27A;font-weight:800;align-self:center;padding:0 4px">테스트</span><button type="button" id="tOk" style="border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;background:#7FD6A8">정답으로 넘기기 ▶</button><button type="button" id="tSkip" style="border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;background:#FFFFFF">빈칸으로 넘기기 ▶</button>';
+  document.body.appendChild(d);
+  document.getElementById('tOk').onclick=()=>testNext(true);
+  document.getElementById('tSkip').onclick=()=>testNext(false);
+}
+if(location.hash==='#test'){
+  S.grade='5'; S.cls='3'; S.num='1'; S.name='테스트'; S.pharm='튼튼'; S.color='#2F6FD6';
+  testBar(); startGame();
+}
+else if(location.hash==='#preview') viewPreview(); else viewStart();
 </script>
 
 </body></html>
