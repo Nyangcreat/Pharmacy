@@ -1121,7 +1121,8 @@ function testBar(){
   document.getElementById('tOk').onclick=()=>testNext(true);
   document.getElementById('tSkip').onclick=()=>testNext(false);
 }
-if(location.hash==='#test'){
+if(Date.now() >= CLOSE_AT) viewClosed();
+else if(location.hash==='#test'){
   S.grade='5'; S.cls='3'; S.num='1'; S.name='테스트'; S.pharm='튼튼'; S.color='#2F6FD6';
   testBar(); startGame();
 }
