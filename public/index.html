@@ -1088,7 +1088,7 @@ function viewPreview(){
   S.grade='5'; S.cls='3'; S.num='1'; S.name='미리보기'; S.pharm='튼튼';
   SITS = shuffle(ALL_SITS); S.i=0; S.res=[]; S.doneList=[]; startSit(); S.score = 10; viewResult();
 }
-if(Date.now() >= CLOSE_AT) viewClosed(); else if(location.hash==='#preview') viewPreview(); else viewStart();
+if(location.hash==='#preview') viewPreview(); else viewStart();
 </script>
 
 </body></html>
