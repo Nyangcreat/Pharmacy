@@ -457,14 +457,14 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
  {t:"choice",no:12,keep:1,tag:"3단계|하임리히(복부 밀어 올리기)",q:"그래도 떡이 나오지 않아요. 이제 어떻게 할까요?",opts:[["멈추고 기다려요.",0,"멈추면 안 돼요. 떡이 나올 때까지, 구급대가 올 때까지 번갈아 반복해요."],["나올 때까지 등 두드리기와 하임리히법을 5번씩 반복해요.",1]],
   ok:"맞아요! 나올 때까지 반복해요.",
   after:async()=>{fx("등 5번 ↔ 복부 5번 반복!",200,60,"blue");for(let i=0;i<3;i++){K.b.y=228;place(K.b);sfx.tap();await wait(200);K.b.y=232;place(K.b);await wait(300)}}},
- {t:"choice",no:13,keep:1,tag:"만약에|의식을 잃었다면",enter:async()=>{o2on=false;K.ifc=ifCard('잠깐! 만약에…<br>반복하는 도중 B가 <b>정신을 잃고 쓰러진다면?</b>')},
+ {t:"choice",no:13,keep:1,enter:async()=>{o2on=false;K.ifc=ifCard('잠깐! 만약에…<br>반복하는 도중 B가 <b>정신을 잃고 쓰러진다면?</b>')},
   q:"만약 B가 정신을 잃는다면?",opts:[["복부 밀어내기를 계속해요.",0,"정신을 잃으면 숨과 심장을 돕는 응급처치가 필요해요. 다음 시간에 배울 거예요!"],["바닥에 눕힌 후 심폐소생술을 시작해요.",1]],
   ok:"맞아요! 이건 다음 시간에 배울 심폐소생술이에요.",
   after:async()=>{K.ifc.innerHTML="다시 현장으로!<br><small>다행히 B는 정신을 잃지 않았어요. 계속 반복하자…</small>";await wait(1500);K.ifc.remove();o2on=true;
    for(let i=0;i<2;i++){K.b.y=228;place(K.b);sfx.tap();await wait(200);K.b.y=232;place(K.b);await wait(300)}
    fx("퐁!",300,110,"big");await food(298,128,60);sit("");o2stop(true);tint(K.b,0);motion(K.b,"k-bob");pose(K.b,"cough","open");say(K.b,"친구 B","콜록… 콜록… 휴우…");sfx.good();await wait(1400);motion(K.b);pose(K.b,"idle","flat");pose(K.me,"idle");await moveTo(K.me,240,600);
    sfx.siren();moveTo(K.a,165,900);ambulance();await wait(1700);K.r=makeKid({x:-20,shirt:"#F27A2E",uniform:1,cap:"#22365E",pants:"#22365E",hair:"#2E2420"});await moveTo(K.r,70,1100);say(K.r,"119 구급대원","구급대 도착했어요! 응급처치 잘했어요.")}},
- {t:"choice",no:14,keep:1,tag:"해결 후|병원 진료",enter:async()=>{say(K.b,"친구 B","이제 괜찮아. 그냥 집에 갈래.")},q:"떡이 나오고 B가 괜찮다고 해요. B에게 뭐라고 조언할까요?",opts:[["집에서 푹 쉬기",0,"복부 밀어내기를 하면 몸속 장기가 다칠 수 있어요. 겉으로 괜찮아 보여도 검사가 필요해요."],["병원에 가서 검사받기",1]],
+ {t:"choice",no:14,keep:1,enter:async()=>{say(K.b,"친구 B","이제 괜찮아. 그냥 집에 갈래.")},q:"떡이 나오고 B가 괜찮다고 해요. B에게 뭐라고 조언할까요?",opts:[["집에서 푹 쉬기",0,"복부 밀어내기를 하면 몸속 장기가 다칠 수 있어요. 겉으로 괜찮아 보여도 검사가 필요해요."],["병원에 가서 검사받기",1]],
   ok:"맞아요! 이물질이 빠졌어도 내부 장기에 손상이 생겼을 수도 있어 병원에 가 보는 것이 좋아요.",
   after:async()=>{say(K.r,"119 구급대원","맞아요. 병원에 가서 검사받자.");pose(K.r,"point");await wait(1500);say(K.r,"119 구급대원","정말 침착하네요! 출동 보고서 작성을 도와줄래요?");await wait(600)}},
  {t:"order",no:15,tag:"6단계|출동 보고서 작성하기",q:"완전기도폐쇄 환자 구조 방법을 정리해 주세요.",items:["상태 확인 · 119 신고","등 두드리기 5번","복부 밀어내기 5번","나올 때까지 반복","병원 검사 권유"]},
