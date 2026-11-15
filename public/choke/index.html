@@ -53,6 +53,8 @@ form.name .btn{font-size:22px;min-height:54px;margin-top:4px}
 .fx.blue{color:#3A6FC4}
 .fx.hrt{color:#E0475E}
 @keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}20%{transform:translate(-50%,-50%) scale(1.15);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-90%) scale(1);opacity:0}}
+#sitbox.off{display:none!important}
+.o2.inq{margin:0;padding:14px 14px 0}
 .o2{padding:0;margin:10px 0 2px;font-size:15px!important;font-family:var(--fd);font-size:16px;display:flex;align-items:center;gap:10px}
 .o2lab{color:#B7860B;white-space:nowrap}
 .o2 .bar{flex:1;height:12px;border-radius:6px;background:#E5E1DE;overflow:hidden}
@@ -309,7 +311,9 @@ function sentSize(wrap){const W=wrap.clientWidth;if(W===_ss.w)return _ss.v;const
 function fitLine(el,min=12){el.style.whiteSpace="nowrap";el.style.fontSize="";let f=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth+1&&f>min){f-=.5;el.style.fontSize=f+"px"}if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace=""}
 function mhead(t){const e=$("sit");if(!e)return;e.innerHTML=t?SIREN+`<span>${esc(t)}</span>`:"";e.hidden=!t;if(t){const sp=e.querySelector("span");sp.style.minWidth="0";sp.style.flex="1";requestAnimationFrame(()=>fitLine(sp,13))}}
 function sit(t,tag){const e=$("sitTxt");if(!e)return;e.innerHTML=t?(tag?`<span class="spill">${esc(tag)}</span>`:"")+esc(t):"";updSitbox()}
-function updSitbox(){const b=$("sitbox"),tx=$("sitTxt"),o=$("o2");if(!b)return;tx.hidden=!tx.innerHTML;b.hidden=tx.hidden&&o.hidden}
+function updSitbox(){const b=$("sitbox"),tx=$("sitTxt"),o=$("o2");if(!b)return;tx.hidden=!tx.innerHTML;
+  if(tx.hidden){const q=document.querySelector(".qcard");if(o.parentNode!==q){q.prepend(o);o.classList.add("inq")}}else if(o.parentNode!==b){b.appendChild(o);o.classList.remove("inq")}
+  b.hidden=tx.hidden}
 /* ---------- html overlays ---------- */
 const bubs=new Map();
 function say(k,label,text,dy=0){if(bubs.size)hushAll();
@@ -434,7 +438,7 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
   after:async()=>{hushAll();await moveTo(K.me,248,600);sv.appendChild(K.me.root);pose(K.b,"lean","worry");pose(K.me,"blowUp")}},
  {t:"swipe",no:5.5,tag:"2단계|등 두드리기",need:5,
   after:async()=>{pose(K.me,"idle");say(K.b,"친구 B","(…아직도 숨이 안 쉬어져요)");await wait(1200)}},
- {t:"sent",no:7,tag:"3단계|하임리히(복부 밀어 올리기)",parts:["아직 떡이 안 나왔어요. 이제 해야 할 행동은\n",{o:["하임리히(복부 밀어내기)","손가락으로 꺼내기"],show:["손가락으로 꺼내기","하임리히(복부 밀어내기)"],h:"손가락을 넣으면 이물이 더 깊이 들어갈 수 있어요. 이제 하임리히법(복부 밀어내기)이에요."},"예요."],
+ {t:"sent",no:7,parts:["아직 떡이 안 나왔어요. 이제 해야 할 행동은 ",{o:["하임리히(복부 밀어내기)","손가락으로 꺼내기"],show:["손가락으로 꺼내기","하임리히(복부 밀어내기)"],h:"손가락을 넣으면 이물이 더 깊이 들어갈 수 있어요. 이제 하임리히법(복부 밀어내기)이에요."},"예요."],
   ok:"맞아요! 이제 하임리히법, 복부 밀어내기예요."},
  {t:"sent",no:8,tag:"3단계|A. 하임리히법의 [올바른 자세]",parts:["B의 ",{o:["뒤","옆"],show:["옆","뒤"],h:"환자의 등 뒤에 서서 허리를 감싸요."},"에 서서 양팔로 허리를 감싸고,\n한쪽 발을 B의 ",{o:["다리 사이","팔 사이"],show:["다리 사이","팔 사이"],h:"쓰러질 때 받쳐 줄 수 있게 한쪽 발을 환자 다리 사이에 넣어요."},"에 넣어 지지해요."],
   after:async()=>{hushAll();sv.insertBefore(K.me.root,K.b.root);await moveTo(K.me,283,500);pose(K.me,"fist");pose(K.b,"bend","worry")}},
@@ -455,7 +459,7 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
    for(let i=0;i<2;i++){K.b.y=228;place(K.b);sfx.tap();await wait(200);K.b.y=232;place(K.b);await wait(300)}
    fx("퐁!",300,110,"big");await food(298,128,60);sit("");o2stop(true);tint(K.b,0);motion(K.b,"k-bob");pose(K.b,"cough","open");say(K.b,"친구 B","콜록… 콜록… 휴우…");sfx.good();await wait(1400);motion(K.b);pose(K.b,"idle","flat");pose(K.me,"idle");await moveTo(K.me,240,600);
    sfx.siren();moveTo(K.a,165,900);ambulance();await wait(1700);K.r=makeKid({x:-20,shirt:"#F27A2E",uniform:1,cap:"#22365E",pants:"#22365E",hair:"#2E2420"});await moveTo(K.r,70,1100);say(K.r,"119 구급대원","구급대 도착했어요! 응급처치 잘했어요.")}},
- {t:"choice",no:14,keep:1,tag:"해결 후|병원 진료",enter:async()=>{say(K.b,"친구 B","이제 괜찮아. 그냥 집에 갈래.")},q:"떡이 나오고 B가 괜찮다고 해요. B에게 어떻게 하라고 알려 주는 게 좋을까요?",opts:[["집에서 푹 쉬기",0,"복부 밀어내기를 하면 몸속 장기가 다칠 수 있어요. 겉으로 괜찮아 보여도 검사가 필요해요."],["병원에 가서 검사받기",1]],
+ {t:"choice",no:14,keep:1,tag:"해결 후|병원 진료",enter:async()=>{say(K.b,"친구 B","이제 괜찮아. 그냥 집에 갈래.")},q:"떡이 나오고 B가 괜찮다고 해요. B에게 뭐라고 조언할까요?",opts:[["집에서 푹 쉬기",0,"복부 밀어내기를 하면 몸속 장기가 다칠 수 있어요. 겉으로 괜찮아 보여도 검사가 필요해요."],["병원에 가서 검사받기",1]],
   ok:"맞아요! 이물질이 빠졌어도 내부 장기에 손상이 생겼을 수도 있어 병원에 가 보는 것이 좋아요.",
   after:async()=>{say(K.r,"119 구급대원","맞아요. 병원에 가서 검사받자.");pose(K.r,"point");await wait(1500);say(K.r,"119 구급대원","도와줘서 고마워요! 출동 보고서 작성을 도와줄래요?");await wait(600)}},
  {t:"order",no:15,tag:"6단계|출동 보고서 작성하기",q:"완전기도폐쇄 환자 구조 방법을 정리해 주세요.",items:["상태 확인 · 119 신고","등 두드리기 5번","복부 밀어내기 5번","나올 때까지 반복","병원 검사 권유"]},
@@ -464,11 +468,11 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
 M.alone={title:"추가 출동 · 혼자 있을 때",head:"기도폐쇄 해결하기 활동",ctitle:"혼자 있을 때 기도가 막힌다면?",badge0:"상황2",scene:sceneHome,badge:"🏠 자기구조",steps:[
  {t:"narr",text:"집에 혼자 있어요. 견과류를 먹다가… 앗, 목에 걸렸어요! 주변에 아무도 없어요.",btn:"어떡하지?",
   enter:async()=>{pose(K.me,"eat","oo");await wait(900);pose(K.me,"choke","worry");motion(K.me,"k-shake");o2start(K.me);fx("!!",240,95,"big")}},
- {t:"sent",no:1,q:"가장 먼저 해 볼 일은?",parts:["먼저 ",{o:["스스로 세게 기침해","물을 마셔"],h:"물을 마시면 더 깊이 막힐 수 있어요. 먼저 스스로 기침해 봐요."}," 봐요."],
+ {t:"sent",no:1,tag:"1단계|스스로 기침하기",q:"가장 먼저 해 볼 일은?",parts:["먼저 ",{o:["스스로 세게 기침해","물을 마셔"],h:"물을 마시면 더 깊이 막힐 수 있어요. 먼저 스스로 기침해 봐요."}," 봐요."],
   ok:"맞아요! 먼저 스스로 기침해 봐요.",after:async()=>{pose(K.me,"cough","open");fx("콜록…",270,120);await wait(1000);say(K.me,"나","(기침이 안 나와요!)");pose(K.me,"choke","worry");await wait(900);hush(K.me)}},
- {t:"sent",no:2,q:"기침이 안 나와요! 이제 어떻게 할까요?",parts:["",{o:["119에 신고","친구에게 문자"],h:"혼자 있을 때도 먼저 119에 알려요."},"하고,\n내 주먹을 ",{o:["명치","목"],h:"명치와 배꼽 사이예요."},"와 ",{o:["배꼽","무릎"],h:"명치와 배꼽 사이예요."}," 사이에 대고 밀어 올려요."],
+ {t:"sent",no:2,tag:"2단계|119 신고 & 복부 밀어내기",q:"기침이 안 나와요! 이제 어떻게 할까요?",parts:["",{o:["119에 신고","친구에게 문자"],h:"혼자 있을 때도 먼저 119에 알려요."},"하고,\n내 주먹을 ",{o:["명치","목"],h:"명치와 배꼽 사이예요."},"와 ",{o:["배꼽","무릎"],h:"명치와 배꼽 사이예요."}," 사이에 대고 밀어 올려요."],
   after:async()=>{pose(K.me,"phone","open");fx("📞 119",270,120);await wait(1100);pose(K.me,"fist","worry");for(let i=1;i<=3;i++){fx("↗ 쑥!",270,175);sfx.tap();await wait(450)}}},
- {t:"sent",no:3,q:"그래도 안 나와요. 옆에 의자가 있어요!",parts:["의자 등받이처럼 ",{o:["단단하고 고정된","푹신하고 부드러운"],h:"푹신하면 힘이 전달되지 않아요. 단단하고 고정된 물체를 써요."}," 물체에\n명치와 배꼽 사이를 대고 ",{o:["힘껏","살살"],h:"힘껏 눌러야 이물이 나와요."}," 눌러요."],
+ {t:"sent",no:3,tag:"3단계|단단한 물체 이용하기",q:"그래도 안 나와요. 옆에 의자가 있어요!",parts:["의자 등받이처럼 ",{o:["단단하고 고정된","푹신하고 부드러운"],h:"푹신하면 힘이 전달되지 않아요. 단단하고 고정된 물체를 써요."}," 물체에\n명치와 배꼽 사이를 대고 ",{o:["힘껏","살살"],h:"힘껏 눌러야 이물이 나와요."}," 눌러요."],
   ok:"맞아요! 단단하고 고정된 평평한 물체를 이용해요.",
   after:async()=>{motion(K.me);await moveTo(K.me,300,700);pose(K.me,"lean","worry");for(let i=0;i<3;i++){K.me.x=304;place(K.me);sfx.tap();await wait(200);K.me.x=300;place(K.me);await wait(300)}fx("퐁!",280,110,"big");await food(286,128,-50,"#C58B4E");o2stop(true);tint(K.me,0);pose(K.me,"happy","smile");motion(K.me,"k-jump");say(K.me,"나","휴, 나왔다! 그래도 병원에 가서 검사받아야지.")}}
 ]};
@@ -497,6 +501,7 @@ function startMission(key){
 async function runStep(){
   const m=M[S.cur],st=m.steps[S.step];BUSY=true;testBar();
   if(!st){finishMission();BUSY=false;testBar();return}
+  $("sitbox").classList.toggle("off",st.t==="swipe"||st.t==="fist");
   if(st.enter)await st.enter();
   ({narr:viewNarr,bank:viewBank,sent:viewSent,swipe:viewSwipe,fist:viewFist,choice:viewChoice,blank:viewBlank,order:viewOrder,multi:viewMulti,feel:viewFeel})[st.t](st);
   BUSY=false;testBar();
@@ -557,7 +562,7 @@ function viewSent(st){
     const body=lines.map(l=>l.h?`<p class="sent">${l.h}</p>`:`<div class="lgap"></div>`).join("");
     const _r=0;panel.innerHTML=`${tagHtml(st)}${st.q?`<p class="ask${st.qc?" ctr":""}">${esc(st.q)}</p>`:""}<div class="sentwrap">${body}</div>
       <button class="btn" id="chk" type="button" ${all?"":"disabled"}>확인</button><div id="fb">${msg}</div>`;
-    {const f=()=>{const w=panel.querySelector(".sentwrap");if(!w)return;let v=sentSize(w);w.style.setProperty("--sent",v+"px");const ps=[...w.querySelectorAll("p.sent")];ps.forEach(q=>q.style.whiteSpace="nowrap");const mn=w.clientWidth>480?15:13;while(v>mn&&ps.some(q=>q.scrollWidth>q.clientWidth+1)){v-=.5;w.style.setProperty("--sent",v+"px")}ps.forEach(q=>q.style.whiteSpace="")};f();document.fonts&&document.fonts.ready.then(f)}
+    {const f=()=>{const w=panel.querySelector(".sentwrap");if(!w)return;let v=sentSize(w);w.style.setProperty("--sent",v+"px");const ps=[...w.querySelectorAll("p.sent")];ps.forEach(q=>q.style.whiteSpace="nowrap");const mn=w.clientWidth>480?15:13;const cw=q=>{const r=document.createRange();r.selectNodeContents(q);return r.getBoundingClientRect().width};while(v>mn&&ps.some(q=>cw(q)>q.clientWidth-6)){v-=.5;w.style.setProperty("--sent",v+"px")}ps.forEach(q=>q.style.whiteSpace="")};f();document.fonts&&document.fonts.ready.then(f)}
     panel.querySelectorAll(".sent .pick").forEach(x=>x.onclick=()=>{const bb=blanks[+x.dataset.j];bb.val=x.dataset.v;bb.state="";sfx.tap();paint()});
     panel.querySelectorAll("input.inb").forEach(x=>x.oninput=()=>{const bb=blanks[+x.dataset.j];bb.val=x.value.replace(/[^0-9]/g,"").trim()||null;if(x.value!==(bb.val||""))x.value=bb.val||"";bb.state="";$("chk").disabled=!blanks.every(y=>y.val)});
     $("chk").onclick=()=>{
