@@ -226,7 +226,6 @@ body.testing #app{padding-bottom:110px}
       <div><label class="lbl" for="nm">이름 <span class="nm-note">(이름을 정확히 적어 주세요)</span></label><input class="txt" id="nm" maxlength="10" autocomplete="off"></div>
       <div class="hint2" id="nmHint" aria-live="polite"></div>
       <button class="btn" type="submit">출동 준비 완료!</button>
-      <button class="testbtn" id="testStart" type="button">🧪 선생님 미리보기 (이름 없이 바로 시작)</button>
     </form>
   </section>
   <div id="game" hidden>
@@ -418,14 +417,14 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
  {t:"narr",text:"오늘은 친구 A, B와 편의점에 가서 요즘 유행하는 떡을 사 먹기로 했어요.",btn:"맛있게 나눠 먹기!",
   go:async()=>{pose(K.a,"eat","oo");pose(K.b,"eat","oo");say(K.a,"친구 A","이 떡 진짜 쫀득하다!");await wait(1600);hush(K.a);say(K.b,"친구 B","너도 먹어 볼래?");await wait(1500);hushAll();pose(K.a,"idle","smile");pose(K.me,"idle","smile");await wait(500)}},
  {t:"sent",no:1,enter:async()=>{hushAll();sit("맛있게 먹던 A가 갑자기 힘들어 보여요.","상황1-1");pose(K.b,"idle","smile");pose(K.a,"cough","open");motion(K.a,"k-bob");say(K.a,"친구 A","콜록! 콜록! 물… 물…");fx("콜록!",140,118)},
-  fit:1,parts:["A는 기침도 하고 \"물…\" 하고 말도 할 수 있는 걸 보니\n",{o:["부분","완전"],show:["완전","부분"],h:"숨·말·기침이 되면 부분 기도폐쇄예요."}," 기도폐쇄인 것 같아요.\n\nA에게 ",{o:["기침해","물을 마셔"],show:["물을 마셔","기침해"],h:"부분 기도폐쇄일 땐 스스로 하는 기침이 가장 힘이 세요. 물을 마시면 더 깊이 막힐 수 있어요."},"\n보라고 말해요."],
+  fit:1,parts:["A는 기침도 하고 \"물…\" 하고 말도 할 수 있는 걸 보니 ",{o:["부분","완전"],show:["완전","부분"],h:"숨·말·기침이 되면 부분 기도폐쇄예요."}," 기도폐쇄인 것 같아요.\n\nA에게 ",{o:["기침해","물을 마셔"],show:["물을 마셔","기침해"],h:"부분 기도폐쇄일 땐 스스로 하는 기침이 가장 힘이 세요. 물을 마시면 더 깊이 막힐 수 있어요."}," 보라고 말해요."],
   ok:"맞아요! 부분 기도폐쇄일 땐 스스로 하는 기침이 가장 힘이 세요.",
   after:async()=>{say(K.me,"나","A야, 계속 기침해! 세게!");pose(K.me,"pointL");await wait(1100);fx("콜록!!",140,115,"big");await food(127,140,-40);motion(K.a,"k-jump");pose(K.a,"happy","smile");say(K.a,"친구 A","휴, 나왔다! 고마워!");await wait(1400);motion(K.a);pose(K.a,"idle","smile");pose(K.me,"idle");sit("")}},
  {t:"sent",no:3,btn:"완전기도폐쇄 응급처치 시작!",enter:async()=>{hushAll();sit("그때, 친구 B가 갑자기 양손으로 목을 움켜쥐어요!","상황1-2");pose(K.b,"choke","worry");motion(K.b,"k-shake");o2start(K.b);fx("!!",295,95,"big")},
-  parts:["양손으로 목을 움켜쥐는 ",{o:["초킹사인","청색증"],show:["초킹사인","청색증"],h:"목을 양손으로 움켜쥐는 모습을 '초킹사인'이라고 해요. 청색증은 입술이 파래지는 거예요."},"이 보이네요.\n\n아무 소리도 못 내고 입술이 파래지는 걸 보니\n",{o:["완전","부분"],show:["완전","부분"],h:"숨·말·기침이 안 되면 완전 기도폐쇄예요."}," 기도폐쇄예요."],
+  parts:["양손으로 목을 움켜쥐는 ",{o:["초킹사인","청색증"],show:["초킹사인","청색증"],h:"목을 양손으로 움켜쥐는 모습을 '초킹사인'이라고 해요. 청색증은 입술이 파래지는 거예요."},"이 보이네요.\n\n아무 소리도 못 내고 입술이 파래지는 걸 보니 ",{o:["완전","부분"],show:["완전","부분"],h:"숨·말·기침이 안 되면 완전 기도폐쇄예요."}," 기도폐쇄예요."],
   ok:"맞아요! 숨·말·기침이 안 되면 완전 기도폐쇄예요.",
   after:async()=>{await moveTo(K.me,245,700)}},
- {t:"sent",no:4,tag:"1단계|상태 확인 & 도움 요청",parts:["먼저 \"",{o:["기침할 수 있어?","물 마실래?"],show:["기침할 수 있어?","물 마실래?"],h:"말·기침을 할 수 있는지 물어 상태를 확인해요."},"\"\n하고 물어 확인하고,\n\nA에게 ",{o:["119에 신고","부모님께 문자"],show:["부모님께 문자","119에 신고"],h:"완전 기도폐쇄는 바로 119에 알려야 해요."},"해 달라고 부탁해요."],
+ {t:"sent",no:4,tag:"1단계|상태 확인 & 도움 요청",parts:["먼저 \"",{o:["기침할 수 있어?","물 마실래?"],show:["기침할 수 있어?","물 마실래?"],h:"말·기침을 할 수 있는지 물어 상태를 확인해요."},"\" 하고 물어 확인하고,\n\nA에게 ",{o:["119에 신고","부모님께 문자"],show:["부모님께 문자","119에 신고"],h:"완전 기도폐쇄는 바로 119에 알려야 해요."},"해 달라고 부탁해요."],
   ok:"좋아요! 상태를 확인하고 바로 119에 알려요.",
   after:async()=>{say(K.me,"나","B야, 기침할 수 있어?");await wait(1200);say(K.b,"친구 B","(고개를 절레절레)");await wait(1200);hush(K.b);say(K.me,"나","A야, 119에 신고해 줘!");pose(K.me,"pointL");await wait(900);
    pose(K.a,"phone","open");say(K.a,"친구 A","119죠? 편의점 앞인데 친구 목에 떡이 걸렸어요!");fx("📞 119 연결",110,150);await wait(1600);hush(K.me);pose(K.me,"idle")}},
@@ -554,7 +553,7 @@ function viewSent(st){
     const body=lines.map(l=>l.h?`<p class="sent">${l.h}</p>`:`<div class="lgap"></div>`).join("");
     const _r=0;panel.innerHTML=`${tagHtml(st)}${st.q?`<p class="ask${st.qc?" ctr":""}">${esc(st.q)}</p>`:""}<div class="sentwrap">${body}</div>
       <button class="btn" id="chk" type="button" ${all?"":"disabled"}>확인</button><div id="fb">${msg}</div>`;
-    {const f=()=>{const w=panel.querySelector(".sentwrap");if(w)w.style.setProperty("--sent",sentSize(w)+"px")};f();document.fonts&&document.fonts.ready.then(f)}
+    {const f=()=>{const w=panel.querySelector(".sentwrap");if(!w)return;let v=sentSize(w);w.style.setProperty("--sent",v+"px");const ps=[...w.querySelectorAll("p.sent")];ps.forEach(q=>q.style.whiteSpace="nowrap");while(v>13&&ps.some(q=>q.scrollWidth>q.clientWidth+1)){v-=.5;w.style.setProperty("--sent",v+"px")}ps.forEach(q=>q.style.whiteSpace="")};f();document.fonts&&document.fonts.ready.then(f)}
     panel.querySelectorAll(".sent .pick").forEach(x=>x.onclick=()=>{const bb=blanks[+x.dataset.j];bb.val=x.dataset.v;bb.state="";sfx.tap();paint()});
     panel.querySelectorAll("input.inb").forEach(x=>x.oninput=()=>{const bb=blanks[+x.dataset.j];bb.val=x.value.replace(/[^0-9]/g,"").trim()||null;if(x.value!==(bb.val||""))x.value=bb.val||"";bb.state="";$("chk").disabled=!blanks.every(y=>y.val)});
     $("chk").onclick=()=>{
@@ -826,7 +825,7 @@ $("startForm").addEventListener("submit",e=>{
   try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(err){}
   $("start").remove();$("game").hidden=false;startMission("main");
 });
-$("testStart").onclick=()=>{S.grade="5";S.cls="1";S.no="0";S.name="미리보기";TEST=true;document.body.classList.add("testing");
+if($("testStart"))$("testStart").onclick=()=>{S.grade="5";S.cls="1";S.no="0";S.name="미리보기";TEST=true;document.body.classList.add("testing");
   try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(err){}
   $("start").remove();$("game").hidden=false;startMission("main")};
 window.__S=S;window.__M=M;window.__drawCert=()=>drawCert();window.__setTest=v=>{TEST=v};
