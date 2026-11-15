@@ -490,6 +490,7 @@ function perfectCount(){return ["alone","patrol"].filter(k=>S.res[k]).length}
 function rank(){return RANKS[perfectCount()]}
 
 function startMission(key){
+  openStage();
   S.cur=key;mhead(M[key].head);S.hearts=10;S.wrong=0;S.step=0;setHearts();
   M[key].scene();runStep();
 }
@@ -776,7 +777,15 @@ async function showCert(){
   $("goSubmit").onclick=()=>{const bx=$("submitBox");bx.hidden=false;$("goSubmit").classList.add("on");bx.scrollIntoView({behavior:"smooth",block:"center"})};
   panel.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{stage.scrollIntoView({behavior:"smooth",block:"start"});startMission(b.dataset.m)});
   if(S.cur==="main"&&K.me){pose(K.me,"happy","smile");motion(K.me,"k-jump");if(K.r)say(K.r,"119 구급대원","명예 119 대원증을 드립니다!")}
+  closeStage();
 }
+function closeStage(){
+  const st=stage;if(st.hidden)return;sit("");
+  setTimeout(()=>{if(st.hidden)return;const h=st.offsetHeight;st.style.overflow="hidden";
+    const an=st.animate([{height:h+"px",opacity:1},{height:"0px",opacity:0,marginBottom:"-10px"}],{duration:FAST?0:500,easing:"ease-in"});
+    an.onfinish=()=>{st.hidden=true;try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){window.scrollTo(0,0)}};},FAST?0:1200);
+}
+function openStage(){stage.hidden=false}
 let dlApi;
 function getDl(){return dlApi||=(window.claude&&claude.use?claude.use("downloads").catch(()=>null):Promise.resolve(null))}
 function dataBlob(url){const [h,b]=url.split(","),bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:"image/png"})}
@@ -812,6 +821,7 @@ async function testNext(){
   S.step++;runStep();
 }
 async function jumpTo(key,target){
+  openStage();
   BUSY=true;testBar();S.cur=key;mhead(M[key].head);S.hearts=10;S.wrong=0;setHearts();
   FAST=true;M[key].scene();const steps=M[key].steps;
   for(let i=0;i<target;i++){const st=steps[i];if(st.enter)await st.enter();if(st.t==="narr"&&st.go)await st.go();if(st.after)await st.after()}
