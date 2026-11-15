@@ -53,7 +53,7 @@ form.name .btn{font-size:22px;min-height:54px;margin-top:4px}
 .fx.blue{color:#3A6FC4}
 .fx.hrt{color:#E0475E}
 @keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}20%{transform:translate(-50%,-50%) scale(1.15);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-90%) scale(1);opacity:0}}
-.o2{padding:0 4px;margin:-2px 0;font-family:var(--fd);font-size:16px;display:flex;align-items:center;gap:10px}
+.o2{padding:0;margin:10px 0 2px;font-size:15px!important;font-family:var(--fd);font-size:16px;display:flex;align-items:center;gap:10px}
 .o2lab{color:#B7860B;white-space:nowrap}
 .o2 .bar{flex:1;height:12px;border-radius:6px;background:#E5E1DE;overflow:hidden}
 .o2 .bar i{display:block;height:100%;width:100%;background:#4BA3E3;border-radius:6px;transition:width .3s linear,background .3s}
@@ -236,8 +236,7 @@ body.testing #app{padding-bottom:110px}
     <svg id="sv" viewBox="0 0 400 260" aria-hidden="true"></svg>
     <span class="chip hrt stagehrt">생명 하트 <b id="hearts">♥ 10</b></span>
   </div>
-  <div class="o2" id="o2" hidden><span class="o2lab">골든타임 4분</span><span class="bar"><i id="o2bar"></i></span><span class="warn" id="o2warn"></span></div>
-  <div class="sitbox" id="sitbox" hidden></div>
+  <div class="sitbox" id="sitbox" hidden><div id="sitTxt"></div><div class="o2" id="o2" hidden><span class="o2lab">골든타임 4분</span><span class="bar"><i id="o2bar"></i></span><span class="warn" id="o2warn"></span></div></div>
   <div class="qcard">
   <div id="panel" aria-live="polite"></div></div>
   </div>
@@ -309,7 +308,8 @@ let _ss={w:0,v:20};
 function sentSize(wrap){const W=wrap.clientWidth;if(W===_ss.w)return _ss.v;const p=document.createElement("p");p.className="sent";p.style.cssText="position:absolute;visibility:hidden;white-space:nowrap;font-size:20px";p.textContent='A는 기침도 하고 "물…" 하고 말도 할 수 있는 걸 보니';wrap.appendChild(p);const v=Math.max(14,Math.min(20,Math.floor(20*W/p.scrollWidth*10)/10-.2));p.remove();_ss={w:W,v};return v}
 function fitLine(el,min=12){el.style.whiteSpace="nowrap";el.style.fontSize="";let f=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth+1&&f>min){f-=.5;el.style.fontSize=f+"px"}if(el.scrollWidth>el.clientWidth+1)el.style.whiteSpace=""}
 function mhead(t){const e=$("sit");if(!e)return;e.innerHTML=t?SIREN+`<span>${esc(t)}</span>`:"";e.hidden=!t;if(t){const sp=e.querySelector("span");sp.style.minWidth="0";sp.style.flex="1";requestAnimationFrame(()=>fitLine(sp,13))}}
-function sit(t,tag){const e=$("sitbox");if(!e)return;e.innerHTML=t?(tag?`<span class="spill">${esc(tag)}</span>`:"")+esc(t):"";e.hidden=!t}
+function sit(t,tag){const e=$("sitTxt");if(!e)return;e.innerHTML=t?(tag?`<span class="spill">${esc(tag)}</span>`:"")+esc(t):"";updSitbox()}
+function updSitbox(){const b=$("sitbox"),tx=$("sitTxt"),o=$("o2");if(!b)return;tx.hidden=!tx.innerHTML;b.hidden=tx.hidden&&o.hidden}
 /* ---------- html overlays ---------- */
 const bubs=new Map();
 function say(k,label,text,dy=0){if(bubs.size)hushAll();
@@ -325,10 +325,10 @@ function ifCard(html){const d=document.createElement("div");d.className="ifcard"
 
 /* ---------- oxygen gauge (mood only, never runs out) ---------- */
 let o2=100,o2on=false,o2who=null;
-function o2start(k){o2=100;o2on=true;o2who=k;$("o2").hidden=false;o2paint()}
-function o2stop(fill){o2on=false;if(fill){o2=100;o2paint();setTimeout(()=>{$("o2").hidden=true},1400)}else $("o2").hidden=true}
+function o2start(k){o2=100;o2on=true;o2who=k;$("o2").hidden=false;updSitbox();o2paint()}
+function o2stop(fill){o2on=false;if(fill){o2=100;o2paint();setTimeout(()=>{$("o2").hidden=true;updSitbox()},1400)}else{$("o2").hidden=true;updSitbox()}}
 function o2paint(){$("o2bar").style.width=o2+"%";$("o2bar").style.background=o2<35?"#E2533A":o2<60?"#F2B33D":"#4BA3E3";$("o2").classList.toggle("low",o2<35);$("o2warn").textContent=o2<35?"서둘러요!":"";if(o2who)tint(o2who,Math.max(0,(100-o2)/100*.65))}
-setInterval(()=>{if(!o2on)return;o2=Math.max(18,o2-1.2);o2paint()},1000);
+setInterval(()=>{if(!o2on)return;o2=Math.max(18,o2-.6);o2paint()},1000);
 function o2hit(){if(o2on){o2=Math.max(18,o2-8);o2paint()}}
 
 /* ---------- scenes ---------- */
