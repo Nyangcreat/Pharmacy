@@ -138,6 +138,11 @@ form.name .btn{font-size:22px;min-height:54px;margin-top:4px}
 .card input{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;min-width:0;color:var(--ink)}
 .hint2{font-size:13px;color:var(--bad);min-height:18px}
 #certWrap{display:flex;flex-direction:column;gap:10px}
+.notebox{display:grid;gap:6px;background:#FFF8EE;border:1.5px dashed var(--gold);border-radius:16px;padding:10px 14px}
+.notebox label{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+.notebox label b{font-family:var(--fd);font-weight:400;font-size:18px;color:#B07A12}
+.notebox label span{font-size:14px;color:var(--ink2)}
+.notebox textarea{font:inherit;font-size:16px;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;resize:none;background:#fff;color:var(--ink)}
 #certImg{width:auto;max-width:min(100%,560px);max-height:52vh;margin:0 auto;border-radius:16px;box-shadow:0 6px 20px rgba(80,40,20,.15);display:block}
 .brow{display:flex;gap:8px;flex-wrap:wrap}
 .brow>*{flex:1 1 45%;text-align:center;text-decoration:none}
@@ -713,8 +718,12 @@ function finishMission(){
 const who=()=>TEST?"선생님 미리보기":`${S.grade}학년 ${S.cls}반 ${S.no}번 ${S.name}`;
 async function drawCert(){
   try{await Promise.all([document.fonts.load('40px "Jua"'),document.fonts.load('20px "Gowun Dodum"')])}catch(e){}
-  const W=1000,H=620,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   const FD='"Jua","Gowun Dodum",sans-serif',FB='"Gowun Dodum","Jua",sans-serif';
+  const note=(S.note||"").trim(),nres=ORDER.filter(k=>S.res[k]).length;
+  const wrapL=(ctx,t,mw)=>{const out=[];let ln="";for(const ch of t){if(ctx.measureText(ln+ch).width>mw&&ln){out.push(ln);ln=ch}else ln+=ch}if(ln)out.push(ln);return out};
+  let nLines=[];if(note){const m=document.createElement("canvas").getContext("2d");m.font=`34px ${FB}`;nLines=wrapL(m,note,820).slice(0,3)}
+  const noteY=Math.max(306+60*nres+20,560),H=note?noteY+64+nLines.length*48+100:620;
+  const W=1000,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
   g.fillStyle="#FFF4EC";g.fillRect(0,0,W,H);
   rr(14,14,W-28,H-28,34);g.fillStyle="#FFFFFF";g.fill();g.lineWidth=10;g.strokeStyle="#E2533A";g.stroke();
@@ -770,6 +779,9 @@ async function drawCert(){
     g.fillText(" : ",x0+lw,yy);const cw=g.measureText(" : ").width;g.fillStyle="#E0475E";g.fillText(`♥ ${rs.hearts}`,x0+lw+cw,yy);
     {const ok=rs.hearts>=NEED[k],px=W-200,pw=150,ph=46,py=yy-36;rr(px,py,pw,ph,23);if(ok){g.fillStyle="#E2533A";g.fill();g.fillStyle="#fff";g.font=`28px ${FD}`;g.textAlign="center";g.fillText("도장 ✔",px+pw/2,py+33)}else{g.setLineDash([6,5]);g.strokeStyle="#B9AFA6";g.lineWidth=2.5;g.stroke();g.setLineDash([]);g.fillStyle="#8C827A";g.font=`24px ${FD}`;g.textAlign="center";g.fillText(`♥${NEED[k]}개부터`,px+pw/2,py+31)}g.textAlign="left"}
     yy+=60});
+  if(note){rr(70,noteY,W-140,64+nLines.length*48,22);g.fillStyle="#FFF6E8";g.fill();g.setLineDash([8,6]);g.strokeStyle="#E7B65C";g.lineWidth=3;g.stroke();g.setLineDash([]);
+    g.fillStyle="#B07A12";g.font=`30px ${FD}`;g.textAlign="left";g.fillText("출동을 마친 대원의 한마디",100,noteY+44);
+    g.fillStyle="#33302E";g.font=`34px ${FB}`;nLines.forEach((l,i)=>g.fillText(l,100,noteY+92+i*48))}
   const d=new Date(),p2=v=>String(v).padStart(2,"0");g.fillStyle="#4A433E";g.font=`38px ${FD}`;g.textAlign="center";g.fillText(`발급일: ${d.getFullYear()}. ${p2(d.getMonth()+1)}. ${p2(d.getDate())}.`,W/2,H-36);
   return c.toDataURL("image/png");
 }
@@ -781,6 +793,7 @@ async function showCert(){
   const head=gotNow?(S.cur==="main"?"출동 보고서 완성! 대원증과 도장을 받았어요.":stampCount()===3?"미션 완료! 도장 3개, 최고 단계로 진급했어요.":"미션 완료! 도장을 하나 더 받았어요."):`미션 완료! 도장까지 ♥ ${short}개가 부족해요. 다시 도전해 볼까요?`;
   panel.innerHTML=`<p class="ask" style="text-align:center">${head}</p>
    <div id="certWrap"><img id="certImg" alt="명예 119 대원증"></div>
+   <div class="notebox"><label for="noteIn"><b>출동을 마친 대원의 한마디</b><span>오늘 학습을 통해 인상 깊었거나 새롭게 알게 된 점을 써 주세요.</span></label><textarea id="noteIn" maxlength="80" rows="2" placeholder="예) 기침을 못 하면 완전 기도폐쇄라는 걸 알았어요."></textarea></div>
    <div class="pick2">${miss.map(k=>`<button class="btn p2 retry" type="button" data-m="${k}"><b>상황${ORDER.indexOf(k)+1} 다시 도전</b><small>♥ ${NEED[k]}개 이상이면 도장 +1</small></button>`).join("")}${left.length?`<button class="btn p2 again" type="button" data-m="${left[0]}"><b>한 번 더!</b><small>새 상황 도전 / 도장 +1</small></button>`:""}<button class="btn p2 submit" type="button" id="goSubmit"><b>이걸로 제출할래요</b><small>대원증 이미지를 저장 후 우리반 띵커벨 보드에 올려요</small></button></div>
    <div id="submitBox" ${left.length?'hidden':''}>
     <button class="btn savebig" id="saveImg" type="button">💾 저장하기</button>
@@ -789,6 +802,7 @@ async function showCert(){
    </div>`;
   S.lastPC=perfectCount();
   certURL=await drawCert();$("certImg").src=certURL;
+  {const ni=$("noteIn");ni.value=S.note||"";let tm;ni.oninput=()=>{S.note=ni.value;$("svmsg").textContent="";clearTimeout(tm);tm=setTimeout(async()=>{certURL=await drawCert();$("certImg").src=certURL},350)}}
   $("saveImg").onclick=saveImage;getDl();
   $("goSubmit").onclick=()=>{const bx=$("submitBox");bx.hidden=false;$("goSubmit").classList.add("on");bx.scrollIntoView({behavior:"smooth",block:"center"})};
   panel.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{stage.scrollIntoView({behavior:"smooth",block:"start"});startMission(b.dataset.m)});
@@ -806,8 +820,10 @@ let dlApi;
 function getDl(){return dlApi||=(window.claude&&claude.use?claude.use("downloads").catch(()=>null):Promise.resolve(null))}
 function dataBlob(url){const [h,b]=url.split(","),bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:"image/png"})}
 async function saveImage(e){
-  const b=e.currentTarget,t=b.textContent;b.disabled=true;b.textContent="만드는 중…";$("svmsg").textContent="";
-  try{const url=certURL||await drawCert(),blob=dataBlob(url),name=`명예119대원증_${who().replace(/\s/g,"")}.png`;
+  const b=e.currentTarget,t=b.textContent;
+  if(!(S.note||"").trim()){$("svmsg").textContent="먼저 '출동을 마친 대원의 한마디'를 써 주세요.";const ni=$("noteIn");ni.scrollIntoView({behavior:"smooth",block:"center"});ni.focus({preventScroll:true});return}
+  b.disabled=true;b.textContent="만드는 중…";$("svmsg").textContent="";
+  try{certURL=await drawCert();$("certImg").src=certURL;const url=certURL,blob=dataBlob(url),name=`명예119대원증_${who().replace(/\s/g,"")}.png`;
     const touch=matchMedia("(pointer:coarse)").matches||navigator.maxTouchPoints>1;let done=false;
     // tablets/phones: share sheet first ("이미지 저장" / "사진에 저장")
     if(touch){try{const f=new File([blob],name,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});done=true;$("svmsg").textContent="저장했어요! 띵커벨 보드에 올려 보세요."}}catch(err){if(err&&err.name==="AbortError"){done=true;$("svmsg").textContent="저장을 취소했어요."}}}
