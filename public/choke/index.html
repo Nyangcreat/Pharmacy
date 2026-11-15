@@ -429,7 +429,7 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
   parts:["양손으로 목을 움켜쥐는 ",{o:["초킹사인","청색증"],show:["초킹사인","청색증"],h:"목을 양손으로 움켜쥐는 모습을 '초킹사인'이라고 해요. 청색증은 입술이 파래지는 거예요."},"이 보이네요.\n\n아무 소리도 못 내고 입술이 파래지는 걸 보니 ",{o:["완전","부분"],show:["완전","부분"],h:"숨·말·기침이 안 되면 완전 기도폐쇄예요."}," 기도폐쇄예요."],
   ok:"맞아요! 숨·말·기침이 안 되면 완전 기도폐쇄예요.",
   after:async()=>{await moveTo(K.me,245,700)}},
- {t:"sent",no:4,tag:"1단계|상태 확인 & 도움 요청",parts:["먼저 \"",{o:["기침할 수 있어?","물 마실래?"],show:["기침할 수 있어?","물 마실래?"],h:"말·기침을 할 수 있는지 물어 상태를 확인해요."},"\" 하고 물어 확인하고,\n\nA에게 ",{o:["119에 신고","부모님께 문자"],show:["부모님께 문자","119에 신고"],h:"완전 기도폐쇄는 바로 119에 알려야 해요."},"해 달라고 부탁해요."],
+ {t:"sent",no:4,tag:"1단계|상태 확인 & 도움 요청",parts:["먼저 \"",{o:["기침할 수 있어?","물 마실래?"],show:["기침할 수 있어?","물 마실래?"],h:"말·기침을 할 수 있는지 물어 상태를 확인해요."},"\" 하고 물어 확인하고,\nA에게 ",{o:["119에 신고","부모님께 문자"],show:["부모님께 문자","119에 신고"],h:"완전 기도폐쇄는 바로 119에 알려야 해요."},"해 달라고 부탁해요."],
   ok:"좋아요! 상태를 확인하고 바로 119에 알려요.",
   after:async()=>{say(K.me,"나","B야, 기침할 수 있어?");await wait(1200);say(K.b,"친구 B","(고개를 절레절레)");await wait(1200);hush(K.b);say(K.me,"나","A야, 119에 신고해 줘!");pose(K.me,"pointL");await wait(900);
    pose(K.a,"phone","open");say(K.a,"친구 A","119죠? 편의점 앞인데 친구 목에 떡이 걸렸어요!");fx("📞 119 연결",110,150);await wait(1600);hush(K.me);pose(K.me,"idle")}},
@@ -638,7 +638,7 @@ function viewBank(st){
       return `<span class="bl drop c${j%4} ${b.state==="good"?"good":b.state==="bad"?"bad":(b.val?"fill":"")}" data-j="${j}">${b.val?esc(b.val):"?"}</span>`}).join("");
     const used=blanks.map(b=>b.val).filter(Boolean);
     panel.innerHTML=`${tagHtml(st)}${st.q?`<p class="ask${st.qc?" ctr":""}">${esc(st.q)}</p>`:""}<div class="sentwrap"><p class="sent">${sent}</p></div>
-      <p class="tip" style="text-align:left;margin:6px 0 4px">보기를 끌어서 빈칸에 놓거나, 눌러서 채워요. 채운 빈칸을 누르면 다시 빠져요.</p><div class="wbank">${pool.map(o=>`<button class="pick chip ${used.includes(o)?"used":""}" type="button" data-v="${esc(o)}" ${used.includes(o)?"disabled":""}>${esc(o)}</button>`).join("")}</div>
+      <div class="wbank">${pool.map(o=>`<button class="pick chip ${used.includes(o)?"used":""}" type="button" data-v="${esc(o)}" ${used.includes(o)?"disabled":""}>${esc(o)}</button>`).join("")}</div><p class="tip" style="text-align:center;margin:-2px 0 0">보기를 끌어서 빈칸에 놓거나, 눌러서 채워요. 채운 빈칸을 누르면 다시 빠져요.</p>
       <button class="btn" id="chk" type="button" ${blanks.every(b=>b.val)?"":"disabled"}>확인</button><div id="fb">${msg}</div>`;
     const put=(j,v)=>{blanks.forEach(b=>{if(b.val===v&&b.state!=="good")b.val=null});const b=blanks[j];if(b.state==="good")return;b.val=v;b.state="";sfx.tap();paint()};
     panel.querySelectorAll(".drop").forEach(d=>d.onclick=()=>{const b=blanks[+d.dataset.j];if(b.state==="good"||!b.val)return;b.val=null;b.state="";paint()});
