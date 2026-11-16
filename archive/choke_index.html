@@ -467,7 +467,7 @@ M.main={title:"필수 출동 · 편의점 떡 사건",ctitle:"출동! 기도폐�
  {t:"sent",no:8,tag:"3단계|A. 하임리히법의 [올바른 자세]",parts:["B의 ",{o:["뒤","옆"],show:["옆","뒤"],h:"환자의 등 뒤에 서서 허리를 감싸요."},"에 서서 양팔로 허리를 감싸고,\n한쪽 발을 B의 ",{o:["다리 사이","팔 사이"],show:["다리 사이","팔 사이"],h:"쓰러질 때 받쳐 줄 수 있게 한쪽 발을 환자 다리 사이에 넣어요."},"에 넣어 지지해요."],
   after:async()=>{hushAll();sv.insertBefore(K.me.root,K.b.root);await moveTo(K.me,283,500);pose(K.me,"fist");pose(K.b,"bend","worry")}},
  {t:"sent",no:9,tag:"3단계|B. 하임리히법의 [손 모양]",parts:["엄지를 ",{o:["안","밖"],h:"엄지를 주먹 안으로 넣어서 쥐어요."},"으로 넣어 주먹을 쥐어요."]},
- {t:"bank",no:10,tag:"3단계|C. 하임리히법의 [압박 위치]",parts:["B의 ",{a:"명치",h:"갈비뼈가 모이는 가운데 오목한 곳, 명치예요."},"와 ",{a:"배꼽",h:"명치와 배꼽 사이예요."}," 사이에 대요."],bank:["명치","배꼽","목","가슴 한가운데","허리","무릎"],
+ {t:"bank",no:10,anyOrder:1,tag:"3단계|C. 하임리히법의 [압박 위치]",parts:["B의 ",{a:"명치",h:"갈비뼈가 모이는 가운데 오목한 곳, 명치예요."},"와 ",{a:"배꼽",h:"명치와 배꼽 사이예요."}," 사이에 대요."],bank:["명치","배꼽","목","가슴 한가운데","허리","무릎"],
   },
  {t:"fist",no:10.5,tag:"3단계|C. 하임리히법의 [압박 위치]",
   after:async()=>{fx("✊",295,178,"big")}},
@@ -686,6 +686,8 @@ function viewBank(st){
       c.addEventListener("pointerup",end);c.addEventListener("pointercancel",e=>{if(drag&&drag.ghost)drag.ghost.remove();drag=null;paint()});
     });
     $("chk").onclick=()=>{
+      if(st.anyOrder){const pool=blanks.filter(b=>b.state==="good").map(b=>b.a),rest=blanks.map(b=>b.a);pool.forEach(v=>rest.splice(rest.indexOf(v),1));
+        blanks.forEach(b=>{if(b.state==="good")return;const i=rest.indexOf(b.val);if(b.val&&i>=0){rest.splice(i,1);b.a=b.val}});}
       const wrong=blanks.filter(b=>b.state!=="good"&&b.val!==b.a);blanks.forEach(b=>{if(b.val===b.a)b.state="good"});
       if(!wrong.length){sfx.good();msg=`<div class="fb ok">${esc(st.ok||"맞아요! 명치와 배꼽 사이예요.")}</div>`;paint();panel.querySelectorAll("button").forEach(x=>x.disabled=true);setTimeout(()=>next(st),900);return}
       wrong.forEach(()=>lose());wrong.forEach(b=>{b.state="";b.val=null});
